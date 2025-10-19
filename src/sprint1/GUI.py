@@ -25,9 +25,11 @@ class SOS():
         ttk.Label(top_frame, text="SOS").pack(side=LEFT)
 
         # Radio buttons for game type next to SOS label
-        game_type = IntVar()
-        ttk.Radiobutton(top_frame, variable=game_type, value=1, text="Simple Game").pack(side=LEFT, anchor=NW)
-        ttk.Radiobutton(top_frame, variable=game_type, value=2, text="General Game").pack(side=LEFT, anchor=NW)
+        self.game_type = StringVar(value="")
+        ttk.Radiobutton(top_frame, variable=self.game_type, value="Simple Game", text="Simple Game").pack(side=LEFT,
+                                                                                                          anchor=NW)
+        ttk.Radiobutton(top_frame, variable=self.game_type, value="General Game", text="General Game").pack(side=LEFT,
+                                                                                                            anchor=NW)
 
         # Prompt to ask user for board size in upper right
         # Default value of 3
@@ -70,22 +72,30 @@ class SOS():
         ttk.Button(right_frame, text="Replay").pack(side=BOTTOM)
 
         # New Game Button on bottom right
-        ttk.Button(right_frame, text="New Game", command=self.new_board).pack(side=BOTTOM)
+        ttk.Button(right_frame, text="New Game", command=self.new_game()).pack(side=BOTTOM)
 
         # Bottom Frame
-        bottom_frame = ttk.Frame(root)
-        bottom_frame.pack(side=BOTTOM, fill=X)
+        self.bottom_frame = ttk.Frame(root)
+        self.bottom_frame.pack(side=BOTTOM, fill=X)
 
         # Current Turn on bottom center
-        ttk.Label(bottom_frame, text="Current turn: blue (or red)").pack(side=BOTTOM)
+        ttk.Label(self.bottom_frame, text="Current turn:").pack(side=BOTTOM)
+        ttk.Label(self.bottom_frame, textvariable=self.game_type).pack(side=BOTTOM)
+
 
         # Execute GUI
         root.mainloop()
 
     def new_board(self):
+        """ Deletes the old board and places a new one with user size and game mode"""
         self.sos_board.delete("all")
         self.sos_board = Board(self.board_size.get())
         self.sos_board.place(anchor=CENTER, relx=.5, rely=.5)
+
+    def new_game(self):
+        """ Starts a new game """
+        self.new_board()
+
 
 # Main
 if __name__ == '__main__':

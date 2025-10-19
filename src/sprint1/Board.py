@@ -11,6 +11,9 @@ class Board(Canvas):
         # Initialize row and column number variable
         self.num_of_rows_and_columns = num_of_rows_and_columns
 
+        # Initialize game type (default = simple)
+        self.game_type = "Simple"
+
         # Start Board
         self.new_game()
 
