@@ -2,7 +2,7 @@ from tkinter import ttk
 from Board import *
 
 
-class SOS:
+class SOS():
     def __init__(self):
         """ Initialize SOS game GUI """
 
@@ -12,6 +12,10 @@ class SOS:
         root.title("SOS Game")
         # No ability to resize since component size don't scale
         root.resizable(width=False, height=False)
+
+        # Create game board class in the center
+        self.sos_board = Board(3)
+        self.sos_board.place(anchor=CENTER, relx=.5, rely=.5)
 
         # Top Frame
         top_frame = ttk.Frame(root)
@@ -26,9 +30,12 @@ class SOS:
         ttk.Radiobutton(top_frame, variable=game_type, value=2, text="General Game").pack(side=LEFT, anchor=NW)
 
         # Prompt to ask user for board size in upper right
-        Text(top_frame, height=1, width=2).pack(side=RIGHT)
+        # Default value of 3
+        self.board_size = IntVar(value=3)
+        Entry(top_frame, width=2, textvariable=self.board_size).pack(side=RIGHT)
+
         # Board size prompt label
-        ttk.Label(top_frame, text="Board Size").pack(side=RIGHT)
+        Label(top_frame, text="Board Size").pack(side=RIGHT)
 
         # Left Frame
         left_frame = ttk.Frame(root)
@@ -63,7 +70,7 @@ class SOS:
         ttk.Button(right_frame, text="Replay").pack(side=BOTTOM)
 
         # New Game Button on bottom right
-        ttk.Button(right_frame, text="New Game").pack(side=BOTTOM)
+        ttk.Button(right_frame, text="New Game", command=self.new_board).pack(side=BOTTOM)
 
         # Bottom Frame
         bottom_frame = ttk.Frame(root)
@@ -72,13 +79,13 @@ class SOS:
         # Current Turn on bottom center
         ttk.Label(bottom_frame, text="Current turn: blue (or red)").pack(side=BOTTOM)
 
-        # Create game board in center
-        s = Board(5, 5)
-        s.place(anchor=CENTER, relx=.5, rely=.5)
-
         # Execute GUI
         root.mainloop()
 
+    def new_board(self):
+        self.sos_board.delete("all")
+        self.sos_board = Board(self.board_size.get())
+        self.sos_board.place(anchor=CENTER, relx=.5, rely=.5)
 
 # Main
 if __name__ == '__main__':
