@@ -1,4 +1,7 @@
 from tkinter import *
+from tkinter import ttk
+
+from IPython.terminal.pt_inputhooks import tk
 
 
 class Board(Canvas):
@@ -13,6 +16,9 @@ class Board(Canvas):
 
         # Initialize game type (default = simple)
         self.game_type = "Simple"
+
+        # Create pixel instance for cell size later (needed for pixel sizing of buttons)
+        self.pixel = PhotoImage()
 
         # Start Board
         self.new_game()
@@ -40,3 +46,13 @@ class Board(Canvas):
         # Draw each column
         for i in range(self.num_of_rows_and_columns):
             self.create_line(col_width * i, 0, col_width * i, row_height * self.num_of_rows_and_columns)
+
+        # Add Buttons to each empty cell
+        for row in range(self.num_of_rows_and_columns):
+            for column in range(self.num_of_rows_and_columns):
+                cell_button = Button(self, text='empty', width=col_width, height=row_height, relief="solid",
+                                     image=self.pixel, compound="center")
+                button_window = self.create_window(row * row_height + (row_height / 2),
+                                                   column * col_width + (col_width / 2), anchor='center',
+                                                   window=cell_button)
+

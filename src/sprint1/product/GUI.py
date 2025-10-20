@@ -2,7 +2,7 @@ from tkinter import ttk
 from Board import *
 
 
-class SOS():
+class SOS:
     def __init__(self):
         """ Initialize SOS game GUI """
 
@@ -12,10 +12,6 @@ class SOS():
         root.title("SOS Game")
         # No ability to resize since component size don't scale
         root.resizable(width=False, height=False)
-
-        # Create game board class in the center
-        self.sos_board = Board(3)
-        self.sos_board.place(anchor=CENTER, relx=.5, rely=.5)
 
         # Top Frame
         top_frame = ttk.Frame(root)
@@ -72,7 +68,7 @@ class SOS():
         ttk.Button(right_frame, text="Replay").pack(side=BOTTOM)
 
         # New Game Button on bottom right
-        ttk.Button(right_frame, text="New Game", command=self.new_game()).pack(side=BOTTOM)
+        ttk.Button(right_frame, text="New Game", command=self.start_new_game).pack(side=BOTTOM)
 
         # Bottom Frame
         self.bottom_frame = ttk.Frame(root)
@@ -82,17 +78,18 @@ class SOS():
         ttk.Label(self.bottom_frame, text="Current turn:").pack(side=BOTTOM)
         ttk.Label(self.bottom_frame, textvariable=self.game_type).pack(side=BOTTOM)
 
+        # Board Attribute
+        self.sos_board = None
 
         # Execute GUI
         root.mainloop()
 
     def new_board(self):
-        """ Deletes the old board and places a new one with user size and game mode"""
-        self.sos_board.delete("all")
+        """ Creates a new board with specified user size"""
         self.sos_board = Board(self.board_size.get())
         self.sos_board.place(anchor=CENTER, relx=.5, rely=.5)
 
-    def new_game(self):
+    def start_new_game(self):
         """ Starts a new game """
         self.new_board()
 
