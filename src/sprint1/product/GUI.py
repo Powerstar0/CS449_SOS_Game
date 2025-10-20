@@ -1,4 +1,7 @@
 from tkinter import ttk
+
+from pygments.lexers import q
+
 from Board import *
 
 
@@ -40,12 +43,13 @@ class SOS:
         left_frame.pack(side=LEFT, fill=Y)
 
         # Blue player options (label and radio buttons) on left side
+
         ttk.Label(left_frame, text="Blue Player").pack(side=TOP)
         blue_player_type = IntVar()
-        blue_player_choice = IntVar()
+        self.blue_player_choice = StringVar()
         ttk.Radiobutton(left_frame, variable=blue_player_type, value=1, text="Human").pack(side=TOP)
-        ttk.Radiobutton(left_frame, variable=blue_player_choice, value=1, text="S").pack(side=TOP)
-        ttk.Radiobutton(left_frame, variable=blue_player_choice, value=2, text="O").pack(side=TOP)
+        ttk.Radiobutton(left_frame, variable=self.blue_player_choice, value='S', text="S").pack(side=TOP)
+        ttk.Radiobutton(left_frame, variable=self.blue_player_choice, value='O', text="O").pack(side=TOP)
         ttk.Radiobutton(left_frame, variable=blue_player_type, value=2, text="Computer").pack(side=TOP)
 
         # Record game checkbox on bottom left
@@ -86,12 +90,17 @@ class SOS:
 
     def new_board(self):
         """ Creates a new board with specified user size"""
-        self.sos_board = Board(self.board_size.get())
+        self.sos_board = Board(self.board_size.get(), self.cell_update)
         self.sos_board.place(anchor=CENTER, relx=.5, rely=.5)
 
     def start_new_game(self):
         """ Starts a new game """
         self.new_board()
+
+    def cell_update(self, cell):
+        symbol = self.blue_player_choice.get()
+        cell.config(text=symbol)
+
 
 
 # Main

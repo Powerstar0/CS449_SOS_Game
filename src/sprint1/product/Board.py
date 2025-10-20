@@ -1,11 +1,12 @@
 from tkinter import *
 from tkinter import ttk
+import Game_Logic
 
 from IPython.terminal.pt_inputhooks import tk
 
 
 class Board(Canvas):
-    def __init__(self, num_of_rows_and_columns):
+    def __init__(self, num_of_rows_and_columns, cell_update_function):
         """ Initialize the number of rows and columns """
 
         # Inherit methods of Canvas class in Tkinter while providing some arguments
@@ -19,6 +20,12 @@ class Board(Canvas):
 
         # Create pixel instance for cell size later (needed for pixel sizing of buttons)
         self.pixel = PhotoImage()
+
+        # Matrix to store cells
+        self.cell_matrix = []
+
+        # cell update function
+        self.cell_update_function = cell_update_function
 
         # Start Board
         self.new_game()
@@ -49,10 +56,15 @@ class Board(Canvas):
 
         # Add Buttons to each empty cell
         for row in range(self.num_of_rows_and_columns):
+            row_buttons = []
             for column in range(self.num_of_rows_and_columns):
-                cell_button = Button(self, text='empty', width=col_width, height=row_height, relief="solid",
-                                     image=self.pixel, compound="center")
+                cell_button = Button(self, text='', width=col_width, height=row_height, relief="solid",
+                                     image=self.pixel, compound="center", )
+                cell_button.config(command=lambda b=cell_button: self.cell_update_function(b))
+                row_buttons.append(cell_button)
                 button_window = self.create_window(row * row_height + (row_height / 2),
                                                    column * col_width + (col_width / 2), anchor='center',
                                                    window=cell_button)
+            self.cell_matrix.append(row_buttons)
+
 
