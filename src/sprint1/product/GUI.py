@@ -11,8 +11,8 @@ class SOS:
         blue_player = Player()
         red_player = Player()
 
-        # Create the board game logic instance
-        self.boardgame = BoardLogic(blue_player, red_player)
+
+        self.current_turn = 0
 
         # Creates window
         root = Tk()
@@ -27,6 +27,9 @@ class SOS:
 
         # SOS Label in top left
         ttk.Label(top_frame, text="SOS").pack(side=LEFT)
+
+        # Create the board game logic instance (containing function to make the board)
+        self.boardgame = BoardLogic(blue_player, red_player)
 
         # Radio buttons for game type next to SOS label
         self.boardgame.game_type = StringVar(value="Simple Game")
@@ -72,8 +75,8 @@ class SOS:
         red_player_type = StringVar(value="Human")
         red_player_choice = StringVar(value='S')
         ttk.Radiobutton(right_frame, variable=red_player_type, value="Human", text="Human").pack(side=TOP)
-        ttk.Radiobutton(right_frame, variable=red_player_choice, value='S', text="S").pack(side=TOP)
-        ttk.Radiobutton(right_frame, variable=red_player_choice, value='O', text="O").pack(side=TOP)
+        ttk.Radiobutton(right_frame, variable=red_player_choice, value='S', text="S", command=lambda symbol='S': red_player.symbol_update(symbol)).pack(side=TOP)
+        ttk.Radiobutton(right_frame, variable=red_player_choice, value='O', text="O", command=lambda symbol='O': red_player.symbol_update(symbol)).pack(side=TOP)
         ttk.Radiobutton(right_frame, variable=red_player_type, value="Computer", text="Computer").pack(side=TOP)
 
         # Replay Button on bottom right
@@ -87,8 +90,7 @@ class SOS:
         self.bottom_frame.pack(side=BOTTOM, fill=X)
 
         # Current Turn on bottom center
-        self.current_turn = ttk.Label(self.bottom_frame, text="Current turn:")
-        self.current_turn.pack(side=BOTTOM)
+        self.turn_label = ttk.Label(self.bottom_frame, textvariable=self.boardgame.turn)
 
         # Current game mode placeholder variable
         self.game_mode_label = ttk.Label(self.bottom_frame)
@@ -103,15 +105,16 @@ class SOS:
     def start_new_game(self):
         """ Starts a new game """
         # Sets board size based on radio buttons
+        self.boardgame.turn.set("Current Turn: Blue")
         self.boardgame.board_size = self.board_size.get()
+        self.turn_label.pack(side=BOTTOM)
         try:
+            # Create board instance
             board = self.boardgame.new_board()
             # Center the game board
             board.place(anchor=CENTER, relx=.5, rely=.5)
             # Displays current game mode
             self.game_mode_label.config(text=f"Current Game Mode: {self.boardgame.game_type.get()}")
-            # Displays current turn
-            self.current_turn.config(text="Current turn: Blue")
         except (Exception,):
             # If any errors occur, skip execution
             pass

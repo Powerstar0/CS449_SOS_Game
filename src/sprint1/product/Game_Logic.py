@@ -25,7 +25,9 @@ class BoardLogic:
         # Define blue and red players
         self.blue_player = blue_player
         self.red_player = red_player
-        self.turn = "blue"
+        # Set variable for the current turn
+        # self.turn = "blue"
+        self.turn = StringVar(value="Current Turn: Blue")
 
     def new_board(self):
         from Board import Board
@@ -49,5 +51,15 @@ class BoardLogic:
 
     def cell_update(self, cell):
         """ Updates cell with symbol """
-        # Adds the symbol and disable the button to prevent any further changes
-        cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
+        # Blue turn
+        turn = self.turn.get()
+        if turn == "Current Turn: Blue":
+            # Adds the symbol and disable the button to prevent any further changes
+            cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
+            self.turn.set(value="Current Turn: Red")
+        # Red turn
+        else:
+            # Adds the symbol and disable the button to prevent any further changes
+            cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
+            self.turn.set(value="Current Turn: Blue")
+
