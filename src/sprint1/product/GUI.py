@@ -100,10 +100,6 @@ class SOS:
         except:
             messagebox.showerror(title="Error", message="Invalid input for board size, must be only numbers")
 
-
-
-
-
     def start_new_game(self):
         """ Starts a new game """
         self.new_board()
@@ -114,9 +110,8 @@ class SOS:
         cell.config(text=symbol, state=DISABLED, font=("Helvetica", 40))
 
 
-
 # Main
-if __name__ == '__main__':from tkinter import *
+if __name__ == '__main__': from tkinter import *
 from tkinter import ttk, messagebox
 
 from Board import Board
@@ -162,8 +157,8 @@ class SOS:
         # Blue player options (label and radio buttons) on left side
 
         ttk.Label(left_frame, text="Blue Player").pack(side=TOP)
-        blue_player_type = IntVar()
-        self.blue_player_choice = StringVar()
+        blue_player_type = IntVar(value=1)
+        self.blue_player_choice = StringVar(value='S')
         ttk.Radiobutton(left_frame, variable=blue_player_type, value=1, text="Human").pack(side=TOP)
         ttk.Radiobutton(left_frame, variable=self.blue_player_choice, value='S', text="S").pack(side=TOP)
         ttk.Radiobutton(left_frame, variable=self.blue_player_choice, value='O', text="O").pack(side=TOP)
@@ -196,12 +191,12 @@ class SOS:
         self.bottom_frame.pack(side=BOTTOM, fill=X)
 
         # Current Turn on bottom center
-        ttk.Label(self.bottom_frame, text="Current turn:").pack(side=BOTTOM)
+        self.current_turn = ttk.Label(self.bottom_frame, text="Current turn:")
+        self.current_turn.pack(side=BOTTOM)
 
         # Current game mode placeholder variable
         self.game_mode_label = ttk.Label(self.bottom_frame)
         self.game_mode_label.pack(side=BOTTOM)
-
 
         # Board Attribute
         self.sos_board = None
@@ -212,32 +207,38 @@ class SOS:
     def new_board(self):
         """ Creates a new board with specified user size"""
         try:
+            # If board size is correct (n > 2 and n < 10)
             if 2 < self.board_size.get() < 10:
-                self.sos_board = Board(self.board_size.get(), self.cell_update)
+                # Make the board and pass cell function and game mode
+                self.sos_board = Board(self.board_size.get(), self.cell_update, self.game_type.get())
+                # Center the game board
                 self.sos_board.place(anchor=CENTER, relx=.5, rely=.5)
+            # If board size is n < 3 (too small)
             elif self.board_size.get() < 3:
                 messagebox.showerror(title="Error", message="Board size must be greater than 2")
+            # If board size is n > 10 (too large)
             elif self.board_size.get() > 9:
                 messagebox.showerror(title="Error", message="Board size must be less than 9")
+        # If an invalid input is entered (blank and non-integers)
         except:
-            messagebox.showerror(title="Error", message="Invalid input for board size, must be only numbers")
-
+            messagebox.showerror(title="Error", message="Invalid input for board size, must enter a number greater "
+                                                        "than 3 and less than 9")
 
     def set_gamemode(self):
-        """ Sets the game mode """
+        """ Sets the game mode UI to the selected game mode """
         self.game_mode_label.config(text=f"Current Game Mode: {self.game_type.get()}")
-
 
     def start_new_game(self):
         """ Starts a new game """
         self.new_board()
         self.set_gamemode()
+        self.current_turn.config(text="Current turn: Blue")
 
     def cell_update(self, cell):
         """ Updates cell with symbol"""
         symbol = self.blue_player_choice.get()
+        # Adds the symbol ad disable the button to prevent any further changes
         cell.config(text=symbol, state=DISABLED, font=("Helvetica", 40))
-
 
 
 # Main

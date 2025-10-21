@@ -4,7 +4,7 @@ import Game_Logic
 
 
 class Board(Canvas):
-    def __init__(self, num_of_rows_and_columns, cell_update_function):
+    def __init__(self, num_of_rows_and_columns, cell_update_function, game_type):
         """ Initialize the number of rows and columns """
 
         # Inherit methods of Canvas class in Tkinter while providing some arguments
@@ -14,7 +14,7 @@ class Board(Canvas):
         self.num_of_rows_and_columns = num_of_rows_and_columns
 
         # Initialize game type (default = simple)
-        self.game_type = "Simple"
+        self.game_type = game_type
 
         # Create pixel instance for cell size later (needed for pixel sizing of buttons)
         self.pixel = PhotoImage()
@@ -54,18 +54,25 @@ class Board(Canvas):
 
         # Add Buttons to each empty cell
         for row in range(self.num_of_rows_and_columns):
+            # Store buttons in matrix for game logic
             row_buttons = []
             for column in range(self.num_of_rows_and_columns):
+                # Create cell button
                 cell_button = Button(self, text='', width=col_width, height=row_height, relief="solid",
-                                     image=self.pixel, compound="center", )
+                                     image=self.pixel, compound="center")
+                # Call the cell update function when clicked
                 cell_button.config(command=lambda b=cell_button: self.cell_update_function(b))
+                # Add button to the row button
                 row_buttons.append(cell_button)
+                # Create the window for the button in each cell location
                 button_window = self.create_window(row * row_height + (row_height / 2),
                                                    column * col_width + (col_width / 2), anchor='center',
                                                    window=cell_button)
+            # Add row buttons to overall matrix
             self.cell_matrix.append(row_buttons)
 
     def set_game_mode(self, game_mode):
+        """ Sets game mode internally for use in game logic"""
         self.game_type = game_mode
 
 
