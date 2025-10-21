@@ -2,8 +2,6 @@ from tkinter import *
 from tkinter import ttk
 import Game_Logic
 
-from IPython.terminal.pt_inputhooks import tk
-
 
 class Board(Canvas):
     def __init__(self, num_of_rows_and_columns, cell_update_function):
@@ -66,5 +64,8 @@ class Board(Canvas):
                                                    column * col_width + (col_width / 2), anchor='center',
                                                    window=cell_button)
             self.cell_matrix.append(row_buttons)
+
+    def set_game_mode(self, game_mode):
+        self.game_type = game_mode
 
 
