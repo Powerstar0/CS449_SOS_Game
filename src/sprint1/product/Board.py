@@ -1,10 +1,8 @@
 from tkinter import *
-from tkinter import ttk
-import Game_Logic
 
 
 class Board(Canvas):
-    def __init__(self, num_of_rows_and_columns, cell_update_function, game_type):
+    def __init__(self, num_of_rows_and_columns, cell_update_function):
         """ Initialize the number of rows and columns """
 
         # Inherit methods of Canvas class in Tkinter while providing some arguments
@@ -12,9 +10,6 @@ class Board(Canvas):
 
         # Initialize row and column number variable
         self.num_of_rows_and_columns = num_of_rows_and_columns
-
-        # Initialize game type (default = simple)
-        self.game_type = game_type
 
         # Create pixel instance for cell size later (needed for pixel sizing of buttons)
         self.pixel = PhotoImage()
@@ -65,14 +60,8 @@ class Board(Canvas):
                 # Add button to the row button
                 row_buttons.append(cell_button)
                 # Create the window for the button in each cell location
-                button_window = self.create_window(row * row_height + (row_height / 2),
-                                                   column * col_width + (col_width / 2), anchor='center',
-                                                   window=cell_button)
+                self.create_window(row * row_height + (row_height / 2),
+                                   column * col_width + (col_width / 2), anchor='center',
+                                   window=cell_button)
             # Add row buttons to overall matrix
             self.cell_matrix.append(row_buttons)
-
-    def set_game_mode(self, game_mode):
-        """ Sets game mode internally for use in game logic"""
-        self.game_type = game_mode
-
-
