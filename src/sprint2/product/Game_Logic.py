@@ -42,7 +42,7 @@ class BoardLogic:
                 messagebox.showerror(title="Error", message="Board size must be greater than 2")
             # If board size is n > 10 (too large)
             elif self.board_size > 9:
-                messagebox.showerror(title="Error", message="Board size must be less than 9")
+                messagebox.showerror(title="Error", message="Board size must be less than 10")
         except (Exception,):
             # If an invalid input is entered (blank and non-integers)
             messagebox.showerror(title="Error",
