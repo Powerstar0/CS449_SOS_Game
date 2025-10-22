@@ -18,7 +18,7 @@ class TestGeneralGameMoves:
     """Unit tests for General SOS Game move logic without GUI popping up."""
 
     def test_6_1_valid_move_placement(self, general_game_logic):
-        """6.1: Valid move placement for Blue and Red should display symbol and disable button."""
+        """AC 6.1: Valid move placement for Blue and Red should display symbol and disable button."""
         logic = general_game_logic
 
         # Blue's turn
@@ -41,7 +41,7 @@ class TestGeneralGameMoves:
         assert logic.turn.get() == "Current Turn: Blue", "Turn should pass back to Blue."
 
     def test_6_2_invalid_move_on_occupied_square(self, general_game_logic):
-        """6.2: Occupied squares cannot be overwritten."""
+        """AC 6.2: Occupied squares cannot be overwritten."""
         logic = general_game_logic
 
         # Blue moves first
@@ -61,7 +61,7 @@ class TestGeneralGameMoves:
         assert cell.cget("state") == tk.DISABLED, "Occupied cell must remain disabled."
 
     def test_6_6_turn_passing(self, general_game_logic):
-        """6.6: Turn alternates after each valid move."""
+        """AC 6.6: Turn alternates after each valid move."""
         logic = general_game_logic
         logic.blue_player.symbol = "S"
         logic.red_player.symbol = "O"

@@ -16,6 +16,7 @@ class TestBoard:
 
 
     def test_correct_board_size(self, setup_boardlogic):
+        """ Test that a board is made with valid board size AC 1.1"""
         logic = setup_boardlogic
         logic.board_size = 5
 
@@ -28,6 +29,7 @@ class TestBoard:
 
 
     def test_board_too_small(self, setup_boardlogic):
+        """ Tests error response when board size is too small AC 1.2"""
         logic = setup_boardlogic
         logic.board_size = 2
 
@@ -39,6 +41,7 @@ class TestBoard:
 
 
     def test_board_too_large(self, setup_boardlogic):
+        """ Tests error response when board size is too large AC 1.3"""
         logic = setup_boardlogic
         logic.board_size = 10
 
@@ -49,7 +52,8 @@ class TestBoard:
         assert result is None
 
 
-    def test_board_noninteger_input(self, setup_boardlogic):
+    def test_board_noninteger_size_input(self, setup_boardlogic):
+        """ Tests error response when board size is not an integer AC 1.4"""
         logic = setup_boardlogic
         logic.board_size = "abc"  # invalid type
 

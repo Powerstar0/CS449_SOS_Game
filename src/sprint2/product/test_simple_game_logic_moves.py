@@ -15,7 +15,7 @@ class TestSimpleMoves:
 
 
     def test_ac41_valid_move_placement(self, board_logic):
-        """AC 4.1: Valid move placement (S or O) is displayed and disables the cell."""
+        """AC 4.1: Valid move placement (S or O) is displayed and disables the cell. AC 4.1"""
         # Blue starts
         board_logic.blue_player.symbol = "S"
         board_logic.turn.set("Current Turn: Blue")
@@ -39,7 +39,7 @@ class TestSimpleMoves:
 
 
     def test_ac42_prevent_overwriting(self, board_logic):
-        """AC 4.2: Once a cell is occupied, it cannot be overwritten."""
+        """AC 4.2: Once a cell is occupied, it cannot be overwritten. AC 4.2"""
         board_logic.blue_player.symbol = "S"
         board_logic.turn.set("Current Turn: Blue")
 
@@ -56,7 +56,7 @@ class TestSimpleMoves:
 
 
     def test_ac44_turn_passing(self, board_logic):
-        """AC 4.4: Turn alternates after every valid move."""
+        """AC 4.4: Turn alternates after every valid move. AC 4.4"""
         board_logic.blue_player.symbol = "S"
         board_logic.red_player.symbol = "O"
         board_logic.turn.set("Current Turn: Blue")
