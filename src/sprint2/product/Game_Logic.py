@@ -26,7 +26,6 @@ class BoardLogic:
         self.blue_player = blue_player
         self.red_player = red_player
         # Set variable for the current turn
-        # self.turn = "blue"
         self.turn = StringVar(value="Current Turn: Blue")
 
     def new_board(self):
@@ -63,3 +62,19 @@ class BoardLogic:
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
             self.turn.set(value="Current Turn: Blue")
 
+
+class SOSGameBase:
+    def __init__(self):
+        """ Initializes SOS Game Base Class """
+
+    def check_sos(self):
+        """ Checks if an SOS has been completed """
+
+
+class SimpleSOSGame(SOSGameBase):
+    def __init__(self):
+        super().__init__()
+
+class GeneralSOSGame(SOSGameBase):
+    def __init__(self):
+        super().__init__()

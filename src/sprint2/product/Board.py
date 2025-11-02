@@ -65,3 +65,6 @@ class Board(Canvas):
                                    window=cell_button)
             # Add row buttons to overall matrix
             self.cell_matrix.append(row_buttons)
+
+        def get_matrix():
+            return self.cell_matrix
