@@ -18,6 +18,7 @@ class Player:
 
 class SOSGameBase:
     def __init__(self, blue_player, red_player):
+        from Board import Board
         # Default board size of 3
         self.board_size = 3
         # Default game type of simple
@@ -27,7 +28,7 @@ class SOSGameBase:
         self.red_player = red_player
         # Set variable for the current turn
         self.turn = StringVar(value="Current Turn: Blue")
-        self.board = None
+        self.board = Board(self.board_size, self.cell_update)
         self.cell_matrix = None
 
     def new_board(self):
@@ -59,11 +60,13 @@ class SOSGameBase:
         if turn == "Current Turn: Blue":
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
+            self.check_sos()
             self.turn.set(value="Current Turn: Red")
         # Red turn
         else:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
+            self.check_sos()
             self.turn.set(value="Current Turn: Blue")
 
     def set_game_type(self, game_type):
@@ -73,6 +76,15 @@ class SOSGameBase:
     def check_sos(self):
         """ Checks if an SOS has been completed """
 
+        # SOS Check For Horizontal SOS
+        for i in range(self.board_size - 2):
+            for j in range(self.board_size):
+                if self.cell_matrix[i][j]['text'] == 'S' and self.cell_matrix[i+1][j]['text'] == 'O' and self.cell_matrix[i+2][j]['text'] == 'S':
+                    print("SOS")
+                    self.board.draw_sos_line(i)
+
+
+
 
 class SimpleSOSGame(SOSGameBase):
     def __init__(self, base_game, blue_player, red_player):
@@ -80,6 +92,9 @@ class SimpleSOSGame(SOSGameBase):
         super().__init__(blue_player, red_player)
         # Updates base game parameters with what was given
         super().__dict__.update(base_game.__dict__)
+
+
+
 
 
 class GeneralSOSGame(SOSGameBase):
