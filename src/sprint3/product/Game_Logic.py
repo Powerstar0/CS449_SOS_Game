@@ -28,6 +28,7 @@ class SOSGameBase:
         # Set variable for the current turn
         self.turn = StringVar(value="Current Turn: Blue")
         self.board = None
+        self.cell_matrix = None
 
     def new_board(self):
         from Board import Board
@@ -37,6 +38,7 @@ class SOSGameBase:
             if 2 < self.board_size < 10:
                 # Make the board and pass cell function and game mode
                 self.board = Board(self.board_size, self.cell_update)
+                self.cell_matrix = self.board.cell_matrix
                 return self.board
             # If board size is n < 3 (too small)
             elif self.board_size < 3:
@@ -73,11 +75,16 @@ class SOSGameBase:
 
 
 class SimpleSOSGame(SOSGameBase):
-    def __init__(self):
-        super().__init__()
-        self.board = Board()
+    def __init__(self, base_game, blue_player, red_player):
+        # Initialize base game template
+        super().__init__(blue_player, red_player)
+        # Updates base game parameters with what was given
+        super().__dict__.update(base_game.__dict__)
 
 
 class GeneralSOSGame(SOSGameBase):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, base_game, blue_player, red_player):
+        # Initialize base game template
+        super().__init__(blue_player, red_player)
+        # Updates base game parameters with what was given
+        super().__dict__.update(base_game.__dict__)

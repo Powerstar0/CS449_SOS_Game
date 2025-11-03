@@ -56,7 +56,7 @@ class Board(Canvas):
                 cell_button = Button(self, text='', width=col_width, height=row_height, relief="solid",
                                      image=self.pixel, compound="center")
                 # Call the cell update function when clicked
-                cell_button.config(command=lambda b=cell_button: self.cell_update_function(b))
+                cell_button.config(command=lambda b=cell_button: self.cell_update_function(b, r, c))
                 # Add button to the row button
                 row_buttons.append(cell_button)
                 # Create the window for the button in each cell location

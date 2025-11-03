@@ -109,10 +109,12 @@ class SOS:
         self.boardgame.board_size = self.board_size.get()
         self.turn_label.pack(side=BOTTOM)
         try:
+            # Convert the Base Game Template to either Simple Game
             if self.boardgame.game_type.get() == "Simple Game":
-                self.boardgame = SimpleSOSGame()
+                self.boardgame = SimpleSOSGame(self.boardgame, self.boardgame.blue_player, self.boardgame.red_player)
+            # Convert the Base Game Template to either General Game
             elif self.boardgame.game_type.get() == "General Game":
-                self.boardgame = GeneralSOSGame
+                self.boardgame = GeneralSOSGame(self.boardgame, self.boardgame.blue_player, self.boardgame.red_player)
             # Create board instance
             board = self.boardgame.new_board()
             # Center the game board
