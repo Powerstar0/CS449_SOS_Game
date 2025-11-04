@@ -104,7 +104,7 @@ class SOS:
         self.blue_score_label_text = Label(self.left_frame, text="Blue Player Score:")
         self.blue_score_label = ttk.Label(self.left_frame, textvariable=self.boardgame.blue_player.score)
 
-        self.red_score_label_text = Label(self.right_frame, text="Blue Player Score:")
+        self.red_score_label_text = Label(self.right_frame, text="Red Player Score:")
         self.red_score_label = ttk.Label(self.right_frame, textvariable=self.boardgame.red_player.score)
 
 

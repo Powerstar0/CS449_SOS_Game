@@ -27,7 +27,9 @@ class SOSGameBase:
         self.game_type = "Simple Game"
         # Define blue and red players
         self.blue_player = blue_player
+        blue_player.score.set(0)
         self.red_player = red_player
+        red_player.score.set(0)
         # Set variable for the current turn
         self.turn = StringVar(value="Current Turn: Blue")
         # Create Board Placeholder
@@ -184,10 +186,16 @@ class GeneralSOSGame(SOSGameBase):
         if game_complete:
             if self.blue_player.score.get() > self.red_player.score.get():
                 print("Blue Player won")
+                messagebox.showerror(title="Game Over",
+                                     message=" Blue wins")
             elif self.blue_player.score.get() == self.red_player.score.get():
                 print("Tie")
+                messagebox.showerror(title="Game Over",
+                                     message=f"Tie")
             else:
                 print("Red Player won")
+                messagebox.showerror(title="Game Over",
+                                     message=f"Red wins")
             return True
         return False
 
@@ -203,9 +211,32 @@ class GeneralSOSGame(SOSGameBase):
         if self.turn.get() == "Current Turn: Blue":
             new_score = self.blue_player.score.get() + points_scored
             self.blue_player.score.set(new_score)
+            if points_scored == 0:
+                self.turn.set(value="Current Turn: Red")
         else:
             new_score = self.red_player.score.get() + points_scored
             self.red_player.score.set(new_score)
+            if points_scored == 0:
+                self.turn.set(value="Current Turn: Blue")
+
+
+    def cell_update(self, cell):
+        """ Updates cell with symbol """
+        # Blue turn
+        turn = self.turn.get()
+        if turn == "Current Turn: Blue":
+            # Adds the symbol and disable the button to prevent any further changes
+            cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
+            self.check_sos()
+            if self.win_condition():
+                self.disable_buttons()
+        # Red turn
+        else:
+            # Adds the symbol and disable the button to prevent any further changes
+            cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
+            self.check_sos()
+            if self.win_condition():
+                self.disable_buttons()
 
 
 
