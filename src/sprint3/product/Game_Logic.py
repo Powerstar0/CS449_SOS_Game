@@ -28,8 +28,12 @@ class SOSGameBase:
         self.red_player = red_player
         # Set variable for the current turn
         self.turn = StringVar(value="Current Turn: Blue")
+        # Create Board Placeholder
         self.board = Board(self.board_size, self.cell_update)
+        # Cell matrix placeholder
         self.cell_matrix = None
+        # Store all the complete SOS button sequences
+        self.complete_sos_list = []
 
     def new_board(self):
         from Board import Board
@@ -61,13 +65,16 @@ class SOSGameBase:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
             self.check_sos()
+            self.win_condition()
             self.turn.set(value="Current Turn: Red")
         # Red turn
         else:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
             self.check_sos()
+            self.win_condition()
             self.turn.set(value="Current Turn: Blue")
+
 
     def set_game_type(self, game_type):
         """ Sets game type """
@@ -80,9 +87,55 @@ class SOSGameBase:
         for i in range(self.board_size - 2):
             for j in range(self.board_size):
                 if self.cell_matrix[i][j]['text'] == 'S' and self.cell_matrix[i+1][j]['text'] == 'O' and self.cell_matrix[i+2][j]['text'] == 'S':
-                    print("SOS")
-                    self.board.draw_sos_line(i)
+                    if [self.cell_matrix[i][j], self.cell_matrix[i+1][j], self.cell_matrix[i+2][j]] not in self.complete_sos_list:
+                        print("SOS")
+                        # Add sequence to completed list
+                        self.complete_sos_list.append([self.cell_matrix[i][j], self.cell_matrix[i+1][j], self.cell_matrix[i+2][j]])
+                        self.board.draw_sos_line(i)
 
+        # SOS Check For Vertical SOS
+        for i in range(self.board_size):
+            for j in range(self.board_size - 2):
+                if self.cell_matrix[i][j]['text'] == 'S' and self.cell_matrix[i][j + 1]['text'] == 'O' and self.cell_matrix[i][j + 2]['text'] == 'S':
+                    if [self.cell_matrix[i][j], self.cell_matrix[i][j + 1], self.cell_matrix[i][j + 2]] not in self.complete_sos_list:
+                        print("SOS")
+                        # Add sequence to completed list
+                        self.complete_sos_list.append([self.cell_matrix[i][j], self.cell_matrix[i][j+1], self.cell_matrix[i][j+2]])
+                        self.board.draw_sos_line(i)
+
+        # SOS Check For Left Diagonal SOS
+        for i in range(self.board_size - 2):
+            for j in range(self.board_size - 2):
+                if self.cell_matrix[i][j]['text'] == 'S' and self.cell_matrix[i + 1][j + 1]['text'] == 'O' and \
+                        self.cell_matrix[i + 2][j + 2]['text'] == 'S':
+                    if [self.cell_matrix[i][j], self.cell_matrix[i + 1][j + 1],
+                        self.cell_matrix[i + 2][j + 2]] not in self.complete_sos_list:
+                        print("SOS")
+                        # Add sequence to completed list
+                        self.complete_sos_list.append([self.cell_matrix[i][j], self.cell_matrix[i + 1][j + 1], self.cell_matrix[i + 2][j + 2]])
+                        self.board.draw_sos_line(i)
+
+        # SOS Check For Right Diagonal SOS
+        for i in range(self.board_size - 2):
+            for j in range(2, self.board_size):
+                if self.cell_matrix[i][j]['text'] == 'S' and self.cell_matrix[i + 1][j - 1]['text'] == 'O' and \
+                        self.cell_matrix[i + 2][j - 2]['text'] == 'S':
+                    if [self.cell_matrix[i][j], self.cell_matrix[i + 1][j - 1],
+                        self.cell_matrix[i + 2][j - 2]] not in self.complete_sos_list:
+                        print("SOS")
+                        # Add sequence to completed list
+                        self.complete_sos_list.append(
+                            [self.cell_matrix[i][j], self.cell_matrix[i + 1][j - 1], self.cell_matrix[i + 2][j - 2]])
+                        self.board.draw_sos_line(i)
+
+    def win_condition(self):
+        """ Placeholder for derived classes """
+        return False
+
+    def disable_buttons(self):
+        for i in range(self.board_size):
+            for j in range(self.board_size):
+                self.cell_matrix[i][j].config(state=DISABLED)
 
 
 
@@ -92,6 +145,12 @@ class SimpleSOSGame(SOSGameBase):
         super().__init__(blue_player, red_player)
         # Updates base game parameters with what was given
         super().__dict__.update(base_game.__dict__)
+
+    def win_condition(self):
+        """ First to complete SOS"""
+        if self.complete_sos_list:
+            self.disable_buttons()
+            print(f"{self.turn} wins")
 
 
 
