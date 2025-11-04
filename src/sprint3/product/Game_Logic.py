@@ -1,3 +1,5 @@
+import time
+import tkinter
 from tkinter import messagebox
 from tkinter import *
 
@@ -5,7 +7,7 @@ from tkinter import *
 class Player:
     def __init__(self, player_type="Human"):
         # Set scores to 0
-        self.score = 0
+        self.score = IntVar(value=0)
         # Define the player type
         self.player_type = player_type
         # Start players off with a default S symbol
@@ -65,14 +67,20 @@ class SOSGameBase:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
             self.check_sos()
-            self.win_condition()
+            if self.win_condition():
+                self.disable_buttons()
+                messagebox.showerror(title="Game Over",
+                                     message=f"{self.turn.get()} wins")
             self.turn.set(value="Current Turn: Red")
         # Red turn
         else:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
             self.check_sos()
-            self.win_condition()
+            if self.win_condition():
+                self.disable_buttons()
+                messagebox.showerror(title="Game Over",
+                                     message=f"{self.turn.get()} wins")
             self.turn.set(value="Current Turn: Blue")
 
 
@@ -139,6 +147,7 @@ class SOSGameBase:
 
 
 
+
 class SimpleSOSGame(SOSGameBase):
     def __init__(self, base_game, blue_player, red_player):
         # Initialize base game template
@@ -149,11 +158,8 @@ class SimpleSOSGame(SOSGameBase):
     def win_condition(self):
         """ First to complete SOS"""
         if self.complete_sos_list:
-            self.disable_buttons()
-            print(f"{self.turn} wins")
-
-
-
+            return True
+        return None
 
 
 class GeneralSOSGame(SOSGameBase):
@@ -162,3 +168,32 @@ class GeneralSOSGame(SOSGameBase):
         super().__init__(blue_player, red_player)
         # Updates base game parameters with what was given
         super().__dict__.update(base_game.__dict__)
+
+    def win_condition(self):
+        game_complete = True
+        for i in range(self.board_size):
+            for j in range(self.board_size):
+                if self.cell_matrix[i][j].config(state=DISABLED):
+                    pass
+                else:
+                    game_complete = False
+                    break
+        if game_complete:
+            if self.blue_player.score > self.red_player.score:
+                print("Blue Player won")
+            elif self.blue_player.score == self.red_player.score:
+                print("Tie")
+            else:
+                print("Red Player won")
+            return True
+        return False
+
+
+#    def check_sos(self):
+#        """ Overload check_sos method"""
+#        super().check_sos()
+#        if self.turn.get() == "Current Turn: Blue":
+
+
+
+

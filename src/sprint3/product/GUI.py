@@ -7,9 +7,7 @@ class SOS:
     def __init__(self):
         """ Initialize SOS game GUI """
 
-        # Create blue and red player classes
-        blue_player = Player()
-        red_player = Player()
+
 
 
         self.current_turn = 0
@@ -20,6 +18,10 @@ class SOS:
         root.title("SOS Game")
         # No ability to resize since component size don't scale
         root.resizable(width=False, height=False)
+
+        # Create blue and red player classes
+        blue_player = Player()
+        red_player = Player()
 
         # Top Frame
         top_frame = ttk.Frame(root)
@@ -48,42 +50,42 @@ class SOS:
         Label(top_frame, text="Board Size").pack(side=RIGHT)
 
         # Left Frame
-        left_frame = ttk.Frame(root)
-        left_frame.pack(side=LEFT, fill=Y)
+        self.left_frame = ttk.Frame(root)
+        self.left_frame.pack(side=LEFT, fill=Y)
 
         # Blue player options (label and radio buttons) on left side
 
-        ttk.Label(left_frame, text="Blue Player").pack(side=TOP)
+        ttk.Label(self.left_frame, text="Blue Player").pack(side=TOP)
         blue_player_type = StringVar(value="Human")
         blue_player_choice = StringVar(value='S')
-        ttk.Radiobutton(left_frame, variable=blue_player_type, value="Human", text="Human").pack(side=TOP)
-        ttk.Radiobutton(left_frame, variable=blue_player_choice, value='S', text="S",
+        ttk.Radiobutton(self.left_frame, variable=blue_player_type, value="Human", text="Human").pack(side=TOP)
+        ttk.Radiobutton(self.left_frame, variable=blue_player_choice, value='S', text="S",
                         command=lambda symbol='S': blue_player.symbol_update(symbol)).pack(side=TOP)
-        ttk.Radiobutton(left_frame, variable=blue_player_choice, value='O', text="O",
+        ttk.Radiobutton(self.left_frame, variable=blue_player_choice, value='O', text="O",
                         command=lambda symbol='O': blue_player.symbol_update(symbol)).pack(side=TOP)
-        ttk.Radiobutton(left_frame, variable=blue_player_type, value="Computer", text="Computer").pack(side=TOP)
+        ttk.Radiobutton(self.left_frame, variable=blue_player_type, value="Computer", text="Computer").pack(side=TOP)
 
         # Record game checkbox on bottom left
-        ttk.Checkbutton(left_frame, text="Record").pack(side=BOTTOM)
+        ttk.Checkbutton(self.left_frame, text="Record").pack(side=BOTTOM)
 
         # Right Frame
-        right_frame = ttk.Frame(root)
-        right_frame.pack(side=RIGHT, fill=Y)
+        self.right_frame = ttk.Frame(root)
+        self.right_frame.pack(side=RIGHT, fill=Y)
 
         # Red player options (label and radio buttons) on right side
-        ttk.Label(right_frame, text="Red Player").pack(side=TOP)
+        ttk.Label(self.right_frame, text="Red Player").pack(side=TOP)
         red_player_type = StringVar(value="Human")
         red_player_choice = StringVar(value='S')
-        ttk.Radiobutton(right_frame, variable=red_player_type, value="Human", text="Human").pack(side=TOP)
-        ttk.Radiobutton(right_frame, variable=red_player_choice, value='S', text="S", command=lambda symbol='S': red_player.symbol_update(symbol)).pack(side=TOP)
-        ttk.Radiobutton(right_frame, variable=red_player_choice, value='O', text="O", command=lambda symbol='O': red_player.symbol_update(symbol)).pack(side=TOP)
-        ttk.Radiobutton(right_frame, variable=red_player_type, value="Computer", text="Computer").pack(side=TOP)
+        ttk.Radiobutton(self.right_frame, variable=red_player_type, value="Human", text="Human").pack(side=TOP)
+        ttk.Radiobutton(self.right_frame, variable=red_player_choice, value='S', text="S", command=lambda symbol='S': red_player.symbol_update(symbol)).pack(side=TOP)
+        ttk.Radiobutton(self.right_frame, variable=red_player_choice, value='O', text="O", command=lambda symbol='O': red_player.symbol_update(symbol)).pack(side=TOP)
+        ttk.Radiobutton(self.right_frame, variable=red_player_type, value="Computer", text="Computer").pack(side=TOP)
 
         # Replay Button on bottom right
-        ttk.Button(right_frame, text="Replay").pack(side=BOTTOM)
+        ttk.Button(self.right_frame, text="Replay").pack(side=BOTTOM)
 
         # New Game Button on bottom right
-        ttk.Button(right_frame, text="New Game", command=self.start_new_game).pack(side=BOTTOM)
+        ttk.Button(self.right_frame, text="New Game", command=self.start_new_game).pack(side=BOTTOM)
 
         # Bottom Frame
         self.bottom_frame = ttk.Frame(root)
@@ -99,6 +101,14 @@ class SOS:
         # Board Attribute
         self.sos_board = None
 
+        self.blue_score_label_text = Label(self.left_frame, text="Blue Player Score:")
+        self.blue_score_label = ttk.Label(self.left_frame, textvariable=self.boardgame.blue_player.score)
+
+        self.red_score_label_text = Label(self.right_frame, text="Blue Player Score:")
+        self.red_score_label = ttk.Label(self.right_frame, textvariable=self.boardgame.red_player.score)
+
+
+
         # Execute GUI
         root.mainloop()
 
@@ -108,6 +118,10 @@ class SOS:
         self.boardgame.turn.set("Current Turn: Blue")
         self.boardgame.board_size = self.board_size.get()
         self.turn_label.pack(side=BOTTOM)
+        self.blue_score_label.pack_forget()
+        self.red_score_label.pack_forget()
+        self.blue_score_label_text.pack_forget()
+        self.red_score_label_text.pack_forget()
         try:
             # Convert the Base Game Template to either Simple Game
             if self.boardgame.game_type.get() == "Simple Game":
@@ -115,7 +129,12 @@ class SOS:
             # Convert the Base Game Template to either General Game
             elif self.boardgame.game_type.get() == "General Game":
                 self.boardgame = GeneralSOSGame(self.boardgame, self.boardgame.blue_player, self.boardgame.red_player)
-            # Create board instance
+                self.blue_score_label_text.pack(side=TOP)
+                self.red_score_label_text.pack(side=TOP)
+                self.blue_score_label.pack(side=TOP)
+                self.red_score_label.pack(side=TOP)
+
+                # Create board instance
             board = self.boardgame.new_board()
             # Center the game board
             board.place(anchor=CENTER, relx=.5, rely=.5)
