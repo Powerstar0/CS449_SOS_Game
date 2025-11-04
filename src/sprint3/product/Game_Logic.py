@@ -170,18 +170,21 @@ class GeneralSOSGame(SOSGameBase):
         super().__dict__.update(base_game.__dict__)
 
     def win_condition(self):
+        """ Win condition for general SOS"""
+        # Check to see if all cells are disabled
         game_complete = True
         for i in range(self.board_size):
             for j in range(self.board_size):
-                if self.cell_matrix[i][j].config(state=DISABLED):
+                if self.cell_matrix[i][j]["state"] == tkinter.DISABLED:
                     pass
                 else:
                     game_complete = False
                     break
+        # If cells are disabled, determine winner based on score
         if game_complete:
-            if self.blue_player.score > self.red_player.score:
+            if self.blue_player.score.get() > self.red_player.score.get():
                 print("Blue Player won")
-            elif self.blue_player.score == self.red_player.score:
+            elif self.blue_player.score.get() == self.red_player.score.get():
                 print("Tie")
             else:
                 print("Red Player won")
@@ -189,10 +192,20 @@ class GeneralSOSGame(SOSGameBase):
         return False
 
 
-#    def check_sos(self):
-#        """ Overload check_sos method"""
-#        super().check_sos()
-#        if self.turn.get() == "Current Turn: Blue":
+    def check_sos(self):
+        """ Overload check_sos method"""
+        old_sos_list = self.complete_sos_list.copy()
+        print(len(old_sos_list))
+        super().check_sos()
+        print(len(old_sos_list))
+        print(len(self.complete_sos_list))
+        points_scored = len(self.complete_sos_list) - len(old_sos_list)
+        if self.turn.get() == "Current Turn: Blue":
+            new_score = self.blue_player.score.get() + points_scored
+            self.blue_player.score.set(new_score)
+        else:
+            new_score = self.red_player.score.get() + points_scored
+            self.red_player.score.set(new_score)
 
 
 
