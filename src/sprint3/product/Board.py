@@ -64,21 +64,25 @@ class Board(Canvas):
             # Add row buttons to overall matrix
             self.cell_matrix.append(row_buttons)
 
-        # Overlay Canvas to draw the winning line
-        self.overlay = Canvas(self,
-                              width=self.winfo_width(),
-                              height=self.winfo_height(),
-                              bg=self['bg'],
-                              highlightthickness=0)
+            #self.overlay = Canvas(self, height=2, width=450, borderwidth=0, highlightbackground="black", bg="red")
+            #self.overlay.place(x=0, y=(self.row_height * 1) / 2)
+            #Misc.lift(self.overlay)
+
 
         # Embed overlay in the Canvas above buttons
-        self.overlay_window = self.create_window(0, 0, anchor='nw', window=self.overlay)
+        #self.overlay_window = self.create_window(0, 0, anchor='nw', window=self.overlay)
 
-        self.overlay.create_line(10, 30, self.winfo_width() - 10, 30, width=6, fill="red")
+            #self.overlay.create_line(10, 30, self.winfo_width() - 10, 30, width=6, fill="red")
 
     def draw_sos_line(self, row):
-        line = self.create_line(0, self.row_height * row , self.col_width * self.num_of_rows_and_columns, self.row_height * row, fill="red")
-        line_id = self.create_line(10, 10, 290, 290, width=5, fill="red")
-        self.tag_raise(line_id)
+        # Overlay Canvas to draw the winning lines
+        self.overlay = Canvas(self, height=2, width=450, borderwidth=0, highlightbackground="black", bg="red")
+        self.overlay.place(x=0, y=(self.row_height * 1) / 2)
+        Misc.lift(self.overlay)
+        self.overlay.create_line(10, 30, self.winfo_width() - 10, 30, width=6, fill="red")
+
+        #line = self.create_line(0, self.row_height * row , self.col_width * self.num_of_rows_and_columns, self.row_height * row, fill="red")
+        #line_id = self.create_line(10, 10, 290, 290, width=5, fill="red")
+        #self.tag_raise(line_id)
 
 
