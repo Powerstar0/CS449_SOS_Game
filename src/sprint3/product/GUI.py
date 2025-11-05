@@ -1,6 +1,7 @@
 # Main
 from Game_Logic import *
 from tkinter import ttk
+from tkinter import messagebox
 
 
 class SOS:
@@ -111,38 +112,42 @@ class SOS:
 
     def start_new_game(self):
         """ Starts a new game """
-        # Sets board size based on radio buttons
-        self.boardgame.turn.set("Current Turn: Blue")
-        self.boardgame.board_size = self.board_size.get()
-        self.turn_label.pack(side=BOTTOM)
-        # Hide Player score labels
-        self.blue_score_label.pack_forget()
-        self.red_score_label.pack_forget()
-        self.blue_score_label_text.pack_forget()
-        self.red_score_label_text.pack_forget()
-        try:
-            # Reset SOS sequence list
-            self.boardgame.complete_sos_list = []
-            # Convert the Base Game Template to either Simple Game
-            if self.boardgame.game_type.get() == "Simple Game":
-                self.boardgame = SimpleSOSGame(self.boardgame, self.boardgame.blue_player, self.boardgame.red_player)
-            # Convert the Base Game Template to either General Game
-            elif self.boardgame.game_type.get() == "General Game":
-                self.boardgame = GeneralSOSGame(self.boardgame, self.boardgame.blue_player, self.boardgame.red_player)
-                self.blue_score_label_text.pack(side=TOP)
-                self.red_score_label_text.pack(side=TOP)
-                self.blue_score_label.pack(side=TOP)
-                self.red_score_label.pack(side=TOP)
+        if messagebox.askyesno(title="New Game",
+                               message="Are you sure you want to make a new game?"):
+            # Sets board size based on radio buttons
+            self.boardgame.turn.set("Current Turn: Blue")
+            self.boardgame.board_size = self.board_size.get()
+            self.turn_label.pack(side=BOTTOM)
+            # Hide Player score labels
+            self.blue_score_label.pack_forget()
+            self.red_score_label.pack_forget()
+            self.blue_score_label_text.pack_forget()
+            self.red_score_label_text.pack_forget()
+            try:
+                # Reset SOS sequence list
+                self.boardgame.complete_sos_list = []
+                # Convert the Base Game Template to either Simple Game
+                if self.boardgame.game_type.get() == "Simple Game":
+                    self.boardgame = SimpleSOSGame(self.boardgame, self.boardgame.blue_player,
+                                                   self.boardgame.red_player)
+                # Convert the Base Game Template to either General Game
+                elif self.boardgame.game_type.get() == "General Game":
+                    self.boardgame = GeneralSOSGame(self.boardgame, self.boardgame.blue_player,
+                                                    self.boardgame.red_player)
+                    self.blue_score_label_text.pack(side=TOP)
+                    self.red_score_label_text.pack(side=TOP)
+                    self.blue_score_label.pack(side=TOP)
+                    self.red_score_label.pack(side=TOP)
 
-                # Create board instance
-            board = self.boardgame.new_board()
-            # Center the game board
-            board.place(anchor=CENTER, relx=.5, rely=.5)
-            # Displays current game mode
-            self.game_mode_label.config(text=f"Current Game Mode: {self.boardgame.game_type.get()}")
-        except (Exception,):
-            # If any errors occur, skip execution
-            pass
+                    # Create board instance
+                board = self.boardgame.new_board()
+                # Center the game board
+                board.place(anchor=CENTER, relx=.5, rely=.5)
+                # Displays current game mode
+                self.game_mode_label.config(text=f"Current Game Mode: {self.boardgame.game_type.get()}")
+            except (Exception,):
+                # If any errors occur, skip execution
+                pass
 
 
 # Main

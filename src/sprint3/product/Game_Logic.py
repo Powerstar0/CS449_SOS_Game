@@ -59,7 +59,7 @@ class SOSGameBase:
         except (Exception,):
             # If an invalid input is entered (blank and non-integers)
             messagebox.showerror(title="Error",
-                                 message="Invalid input for board size, must enter a number greater than 3 and less "
+                                 message="Invgaalid input for board size, must enter a number greater than 3 and less "
                                          "than 9")
 
     def cell_update(self, cell):
@@ -194,13 +194,13 @@ class SimpleSOSGame(SOSGameBase):
         """ First to complete SOS"""
         if self.complete_sos_list:
             self.disable_buttons()
-            messagebox.showerror(title="Game Over",
+            messagebox.showinfo(title="Game Over",
                                  message=f"{self.turn.get()[13:]} wins")
             self.game_over = True
             return True
         elif self.filled_cells():
             self.disable_buttons()
-            messagebox.showerror(title="Game Over", message="Tie")
+            messagebox.showinfo(title="Game Over", message="Tie")
             self.game_over = True
             return True
         return False
@@ -219,15 +219,15 @@ class GeneralSOSGame(SOSGameBase):
         if self.filled_cells():
             if self.blue_player.score.get() > self.red_player.score.get():
                 print("Blue Player won")
-                messagebox.showerror(title="Game Over",
+                messagebox.showinfo(title="Game Over",
                                      message=" Blue wins")
             elif self.blue_player.score.get() == self.red_player.score.get():
                 print("Tie")
-                messagebox.showerror(title="Game Over",
+                messagebox.showinfo(title="Game Over",
                                      message=f"Tie")
             else:
                 print("Red Player won")
-                messagebox.showerror(title="Game Over",
+                messagebox.showinfo(title="Game Over",
                                      message=f"Red wins")
             return True
         return False
