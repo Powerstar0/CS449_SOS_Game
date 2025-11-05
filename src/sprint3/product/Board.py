@@ -58,8 +58,7 @@ class Board(Canvas):
                 row_buttons.append(cell_button)
                 # Create the window for the button in each cell location
                 button_window = self.create_window(row * self.row_height + (self.row_height / 2),
-                                   column * self.col_width + (self.col_width / 2), anchor='center',
-                                   window=cell_button)
+                                                   column * self.col_width + (self.col_width / 2), anchor='center',
+                                                   window=cell_button)
             # Add row buttons to overall matrix
             self.cell_matrix.append(row_buttons)
-

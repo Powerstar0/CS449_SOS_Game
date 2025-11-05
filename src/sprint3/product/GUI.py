@@ -7,9 +7,6 @@ class SOS:
     def __init__(self):
         """ Initialize SOS game GUI """
 
-
-
-
         self.current_turn = 0
 
         # Creates window
@@ -77,8 +74,10 @@ class SOS:
         red_player_type = StringVar(value="Human")
         red_player_choice = StringVar(value='S')
         ttk.Radiobutton(self.right_frame, variable=red_player_type, value="Human", text="Human").pack(side=TOP)
-        ttk.Radiobutton(self.right_frame, variable=red_player_choice, value='S', text="S", command=lambda symbol='S': red_player.symbol_update(symbol)).pack(side=TOP)
-        ttk.Radiobutton(self.right_frame, variable=red_player_choice, value='O', text="O", command=lambda symbol='O': red_player.symbol_update(symbol)).pack(side=TOP)
+        ttk.Radiobutton(self.right_frame, variable=red_player_choice, value='S', text="S",
+                        command=lambda symbol='S': red_player.symbol_update(symbol)).pack(side=TOP)
+        ttk.Radiobutton(self.right_frame, variable=red_player_choice, value='O', text="O",
+                        command=lambda symbol='O': red_player.symbol_update(symbol)).pack(side=TOP)
         ttk.Radiobutton(self.right_frame, variable=red_player_type, value="Computer", text="Computer").pack(side=TOP)
 
         # Replay Button on bottom right
@@ -106,8 +105,6 @@ class SOS:
 
         self.red_score_label_text = Label(self.right_frame, text="Red Player Score:")
         self.red_score_label = ttk.Label(self.right_frame, textvariable=self.boardgame.red_player.score)
-
-
 
         # Execute GUI
         root.mainloop()
