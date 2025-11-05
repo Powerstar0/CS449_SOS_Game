@@ -69,15 +69,16 @@ class SOSGameBase:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
             self.check_sos()
-            self.win_condition()
-            self.turn.set(value="Current Turn: Red")
+            if not self.win_condition():
+                self.turn.set(value="Current Turn: Red")
         # Red turn
         else:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
             self.check_sos()
             self.win_condition()
-            self.turn.set(value="Current Turn: Blue")
+            if not self.win_condition():
+                self.turn.set(value="Current Turn: Blue")
 
 
     def set_game_type(self, game_type):
@@ -95,6 +96,8 @@ class SOSGameBase:
                         print("SOS")
                         # Add sequence to completed list
                         self.complete_sos_list.append([self.cell_matrix[i][j], self.cell_matrix[i+1][j], self.cell_matrix[i+2][j]])
+                        # Color sequence
+                        self.color_sequence(self.cell_matrix[i][j], self.cell_matrix[i+1][j], self.cell_matrix[i+2][j])
 
 
         # SOS Check For Vertical SOS
@@ -105,7 +108,9 @@ class SOSGameBase:
                         print("SOS")
                         # Add sequence to completed list
                         self.complete_sos_list.append([self.cell_matrix[i][j], self.cell_matrix[i][j+1], self.cell_matrix[i][j+2]])
-
+                        # Color sequence
+                        self.color_sequence(self.cell_matrix[i][j], self.cell_matrix[i][j + 1],
+                                            self.cell_matrix[i][j + 2])
 
         # SOS Check For Left Diagonal SOS
         for i in range(self.board_size - 2):
@@ -117,7 +122,9 @@ class SOSGameBase:
                         print("SOS")
                         # Add sequence to completed list
                         self.complete_sos_list.append([self.cell_matrix[i][j], self.cell_matrix[i + 1][j + 1], self.cell_matrix[i + 2][j + 2]])
-
+                        # Color sequence
+                        self.color_sequence(self.cell_matrix[i][j], self.cell_matrix[i + 1][j + 1],
+                                            self.cell_matrix[i + 2][j + 2])
 
         # SOS Check For Right Diagonal SOS
         for i in range(self.board_size - 2):
@@ -130,7 +137,9 @@ class SOSGameBase:
                         # Add sequence to completed list
                         self.complete_sos_list.append(
                             [self.cell_matrix[i][j], self.cell_matrix[i + 1][j - 1], self.cell_matrix[i + 2][j - 2]])
-
+                        # Color sequence
+                        self.color_sequence(self.cell_matrix[i][j], self.cell_matrix[i + 1][j - 1],
+                                            self.cell_matrix[i + 2][j - 2])
 
     def win_condition(self):
         """ Placeholder for derived classes """
@@ -153,6 +162,14 @@ class SOSGameBase:
                     break
         return game_complete
 
+    def color_sequence(self, cell1, cell2, cell3):
+        button_list = [cell1, cell2, cell3]
+        for cell in button_list:
+            if self.turn.get() == "Current Turn: Blue":
+                cell.config(disabledforeground="blue")
+            if self.turn.get() == "Current Turn: Red":
+                cell.config(disabledforeground="red")
+
 
 
 
@@ -169,9 +186,12 @@ class SimpleSOSGame(SOSGameBase):
             self.disable_buttons()
             messagebox.showerror(title="Game Over",
                                  message=f"{self.turn.get()[13:]} wins")
+            return True
         elif self.filled_cells():
             self.disable_buttons()
             messagebox.showerror(title="Game Over", message="Tie")
+            return True
+        return False
 
 
 class GeneralSOSGame(SOSGameBase):
