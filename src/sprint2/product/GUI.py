@@ -120,6 +120,7 @@ class SOS:
             pass
 
 
+
 # Main
 if __name__ == '__main__':
     # Create SOS game object

@@ -1,6 +1,7 @@
 import tkinter
 from tkinter import messagebox
 from tkinter import *
+from Board import Board
 
 
 class Player:
@@ -18,10 +19,9 @@ class Player:
 
 
 class SOSGameBase:
-    def __init__(self, blue_player, red_player):
-        from Board import Board
+    def __init__(self, blue_player, red_player, board_size=3):
         # Default board size of 3
-        self.board_size = 3
+        self.board_size = board_size
         # Default game type of simple
         self.game_type = "Simple Game"
         # Define blue and red players
@@ -41,7 +41,6 @@ class SOSGameBase:
         self.game_over = False
 
     def new_board(self):
-        from Board import Board
         """ Creates a new board with specified user size"""
         try:
             # If board size is correct (n > 2 and n < 10)
@@ -59,8 +58,8 @@ class SOSGameBase:
         except (Exception,):
             # If an invalid input is entered (blank and non-integers)
             messagebox.showerror(title="Error",
-                                 message="Invgaalid input for board size, must enter a number greater than 3 and less "
-                                         "than 9")
+                                 message="Invalid input for board size, must enter a number greater than 2 and less "
+                                         "than 10")
 
     def cell_update(self, cell):
         """ Updates cell with symbol """

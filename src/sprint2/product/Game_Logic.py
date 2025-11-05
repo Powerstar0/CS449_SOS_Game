@@ -1,7 +1,6 @@
 from tkinter import messagebox
 from tkinter import *
 
-
 class Player:
     def __init__(self, player_type="Human"):
         # Set scores to 0
