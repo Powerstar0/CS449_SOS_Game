@@ -60,29 +60,6 @@ class Board(Canvas):
                 button_window = self.create_window(row * self.row_height + (self.row_height / 2),
                                    column * self.col_width + (self.col_width / 2), anchor='center',
                                    window=cell_button)
-                self.tag_lower(button_window)
             # Add row buttons to overall matrix
             self.cell_matrix.append(row_buttons)
-
-            #self.overlay = Canvas(self, height=2, width=450, borderwidth=0, highlightbackground="black", bg="red")
-            #self.overlay.place(x=0, y=(self.row_height * 1) / 2)
-            #Misc.lift(self.overlay)
-
-
-        # Embed overlay in the Canvas above buttons
-        #self.overlay_window = self.create_window(0, 0, anchor='nw', window=self.overlay)
-
-            #self.overlay.create_line(10, 30, self.winfo_width() - 10, 30, width=6, fill="red")
-
-    def draw_sos_line(self, row):
-        # Overlay Canvas to draw the winning lines
-        self.overlay = Canvas(self, height=2, width=450, borderwidth=0, highlightbackground="black", bg="red")
-        self.overlay.place(x=0, y=(self.row_height * 1) / 2)
-        Misc.lift(self.overlay)
-        self.overlay.create_line(10, 30, self.winfo_width() - 10, 30, width=6, fill="red")
-
-        #line = self.create_line(0, self.row_height * row , self.col_width * self.num_of_rows_and_columns, self.row_height * row, fill="red")
-        #line_id = self.create_line(10, 10, 290, 290, width=5, fill="red")
-        #self.tag_raise(line_id)
-
 

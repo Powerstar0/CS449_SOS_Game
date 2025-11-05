@@ -69,20 +69,14 @@ class SOSGameBase:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
             self.check_sos()
-            if self.win_condition():
-                self.disable_buttons()
-                messagebox.showerror(title="Game Over",
-                                     message=f"{self.turn.get()} wins")
+            self.win_condition()
             self.turn.set(value="Current Turn: Red")
         # Red turn
         else:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
             self.check_sos()
-            if self.win_condition():
-                self.disable_buttons()
-                messagebox.showerror(title="Game Over",
-                                     message=f"{self.turn.get()} wins")
+            self.win_condition()
             self.turn.set(value="Current Turn: Blue")
 
 
@@ -101,7 +95,7 @@ class SOSGameBase:
                         print("SOS")
                         # Add sequence to completed list
                         self.complete_sos_list.append([self.cell_matrix[i][j], self.cell_matrix[i+1][j], self.cell_matrix[i+2][j]])
-                        self.board.draw_sos_line(i)
+
 
         # SOS Check For Vertical SOS
         for i in range(self.board_size):
@@ -111,7 +105,7 @@ class SOSGameBase:
                         print("SOS")
                         # Add sequence to completed list
                         self.complete_sos_list.append([self.cell_matrix[i][j], self.cell_matrix[i][j+1], self.cell_matrix[i][j+2]])
-                        self.board.draw_sos_line(i)
+
 
         # SOS Check For Left Diagonal SOS
         for i in range(self.board_size - 2):
@@ -123,7 +117,7 @@ class SOSGameBase:
                         print("SOS")
                         # Add sequence to completed list
                         self.complete_sos_list.append([self.cell_matrix[i][j], self.cell_matrix[i + 1][j + 1], self.cell_matrix[i + 2][j + 2]])
-                        self.board.draw_sos_line(i)
+
 
         # SOS Check For Right Diagonal SOS
         for i in range(self.board_size - 2):
@@ -136,7 +130,7 @@ class SOSGameBase:
                         # Add sequence to completed list
                         self.complete_sos_list.append(
                             [self.cell_matrix[i][j], self.cell_matrix[i + 1][j - 1], self.cell_matrix[i + 2][j - 2]])
-                        self.board.draw_sos_line(i)
+
 
     def win_condition(self):
         """ Placeholder for derived classes """
@@ -146,6 +140,18 @@ class SOSGameBase:
         for i in range(self.board_size):
             for j in range(self.board_size):
                 self.cell_matrix[i][j].config(state=DISABLED)
+
+    def filled_cells(self):
+        # Check to see if all cells are disabled
+        game_complete = True
+        for i in range(self.board_size):
+            for j in range(self.board_size):
+                if self.cell_matrix[i][j]["state"] == tkinter.DISABLED:
+                    pass
+                else:
+                    game_complete = False
+                    break
+        return game_complete
 
 
 
@@ -160,8 +166,12 @@ class SimpleSOSGame(SOSGameBase):
     def win_condition(self):
         """ First to complete SOS"""
         if self.complete_sos_list:
-            return True
-        return None
+            self.disable_buttons()
+            messagebox.showerror(title="Game Over",
+                                 message=f"{self.turn.get()[13:]} wins")
+        elif self.filled_cells():
+            self.disable_buttons()
+            messagebox.showerror(title="Game Over", message="Tie")
 
 
 class GeneralSOSGame(SOSGameBase):
@@ -173,17 +183,8 @@ class GeneralSOSGame(SOSGameBase):
 
     def win_condition(self):
         """ Win condition for general SOS"""
-        # Check to see if all cells are disabled
-        game_complete = True
-        for i in range(self.board_size):
-            for j in range(self.board_size):
-                if self.cell_matrix[i][j]["state"] == tkinter.DISABLED:
-                    pass
-                else:
-                    game_complete = False
-                    break
         # If cells are disabled, determine winner based on score
-        if game_complete:
+        if self.filled_cells():
             if self.blue_player.score.get() > self.red_player.score.get():
                 print("Blue Player won")
                 messagebox.showerror(title="Game Over",
@@ -203,10 +204,7 @@ class GeneralSOSGame(SOSGameBase):
     def check_sos(self):
         """ Overload check_sos method"""
         old_sos_list = self.complete_sos_list.copy()
-        print(len(old_sos_list))
         super().check_sos()
-        print(len(old_sos_list))
-        print(len(self.complete_sos_list))
         points_scored = len(self.complete_sos_list) - len(old_sos_list)
         if self.turn.get() == "Current Turn: Blue":
             new_score = self.blue_player.score.get() + points_scored

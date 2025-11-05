@@ -118,11 +118,14 @@ class SOS:
         self.boardgame.turn.set("Current Turn: Blue")
         self.boardgame.board_size = self.board_size.get()
         self.turn_label.pack(side=BOTTOM)
+        # Hide Player score labels
         self.blue_score_label.pack_forget()
         self.red_score_label.pack_forget()
         self.blue_score_label_text.pack_forget()
         self.red_score_label_text.pack_forget()
         try:
+            # Reset SOS sequence list
+            self.boardgame.complete_sos_list = []
             # Convert the Base Game Template to either Simple Game
             if self.boardgame.game_type.get() == "Simple Game":
                 self.boardgame = SimpleSOSGame(self.boardgame, self.boardgame.blue_player, self.boardgame.red_player)
