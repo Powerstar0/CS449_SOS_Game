@@ -1,7 +1,9 @@
+import time
 import tkinter
 from tkinter import messagebox
 from tkinter import *
 from Board import Board
+import random
 
 
 class Player:
@@ -9,13 +11,45 @@ class Player:
         # Set scores to 0
         self.score = IntVar(value=0)
         # Define the player type
-        self.player_type = player_type
+        self.player_type = "Human"
         # Start players off with a default S symbol
         self.symbol = 'S'
 
     def symbol_update(self, symbol):
         """ Updates symbol for a player"""
         self.symbol = symbol
+
+    def player_update(self, player_type):
+        self.player_type = player_type
+
+
+class ComputerPlayer(Player):
+    def __init__(self, base_player):
+        super().__init__()
+        super().__dict__.update(base_player.__dict__)
+        self.difficulty = "Simple"
+        self.player_type = "Computer"
+        # Updates base game parameters with what was given
+
+    def move_selector(self, board_size, matrix_list):
+        return self.make_random_move(board_size, matrix_list)
+
+    def make_random_move(self, board_size, matrix_list):
+        """ Makes a random valid move """
+        row = random.randint(0, board_size - 1)
+        col = random.randint(0, board_size - 1)
+        while matrix_list[row][col]["state"] == tkinter.DISABLED:
+            row = random.randint(0, board_size - 1)
+            col = random.randint(0, board_size - 1)
+        if random.randint(0,1) == 0:
+            self.symbol = 'S'
+        else:
+            self.symbol = 'O'
+        return matrix_list[row][col]
+
+
+    def complete_sequence(self):
+        pass
 
 
 class SOSGameBase:
@@ -63,14 +97,17 @@ class SOSGameBase:
 
     def cell_update(self, cell):
         """ Updates cell with symbol """
-        # Blue turn
         turn = self.turn.get()
+        # Blue turn
         if turn == "Current Turn: Blue":
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
             self.check_sos()
             if not self.win_condition():
                 self.turn.set(value="Current Turn: Red")
+                if self.red_player.player_type == "Computer":
+                    self.cell_update(self.red_player.move_selector(self.board_size, self.cell_matrix))
+
         # Red turn
         else:
             # Adds the symbol and disable the button to prevent any further changes
@@ -78,6 +115,9 @@ class SOSGameBase:
             self.check_sos()
             if not self.win_condition():
                 self.turn.set(value="Current Turn: Blue")
+                if self.blue_player.player_type == "Computer":
+                    self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
+
 
     def set_game_type(self, game_type):
         """ Sets game type """
@@ -181,6 +221,12 @@ class SOSGameBase:
                 if (self.turn.get() == "Current Turn: Red") and (cell.cget("disabledforeground") == "blue"):
                     cell.config(disabledforeground='purple')
 
+    def start_game(self):
+        """ Only applicable to Computer games """
+        if self.blue_player.player_type == "Computer":
+            if self.turn.get() == "Current Turn: Blue":
+                self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
+
 
 class SimpleSOSGame(SOSGameBase):
     def __init__(self, base_game, blue_player, red_player):
@@ -194,7 +240,7 @@ class SimpleSOSGame(SOSGameBase):
         if self.complete_sos_list:
             self.disable_buttons()
             messagebox.showinfo(title="Game Over",
-                                 message=f"{self.turn.get()[13:]} wins")
+                                message=f"{self.turn.get()[13:]} wins")
             self.game_over = True
             return True
         elif self.filled_cells():
@@ -219,15 +265,15 @@ class GeneralSOSGame(SOSGameBase):
             if self.blue_player.score.get() > self.red_player.score.get():
                 print("Blue Player won")
                 messagebox.showinfo(title="Game Over",
-                                     message=" Blue wins")
+                                    message=" Blue wins")
             elif self.blue_player.score.get() == self.red_player.score.get():
                 print("Tie")
                 messagebox.showinfo(title="Game Over",
-                                     message=f"Tie")
+                                    message=f"Tie")
             else:
                 print("Red Player won")
                 messagebox.showinfo(title="Game Over",
-                                     message=f"Red wins")
+                                    message=f"Red wins")
             return True
         return False
 
