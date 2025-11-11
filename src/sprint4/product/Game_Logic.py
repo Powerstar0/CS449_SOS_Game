@@ -32,6 +32,8 @@ class ComputerPlayer(Player):
         # Updates base game parameters with what was given
 
     def move_selector(self, board_size, matrix_list):
+        if self.sos_identification(board_size, matrix_list):
+            return self.sos_identification(board_size, matrix_list)
         return self.make_random_move(board_size, matrix_list)
 
     def make_random_move(self, board_size, matrix_list):
@@ -41,12 +43,73 @@ class ComputerPlayer(Player):
         while matrix_list[row][col]["state"] == tkinter.DISABLED:
             row = random.randint(0, board_size - 1)
             col = random.randint(0, board_size - 1)
-        if random.randint(0,1) == 0:
+        if random.randint(0, 1) == 0:
             self.symbol = 'S'
         else:
             self.symbol = 'O'
         return matrix_list[row][col]
 
+    def sos_identification(self, board_size, matrix_list):
+        """ Identifies and makes a completing move if an SOS can be made """
+        # SOS Check For Horizontal SOS
+        for i in range(board_size - 2):
+            for j in range(board_size):
+                if matrix_list[i][j]['text'] == 'S' and matrix_list[i + 1][j]['text'] == 'O' and matrix_list[i + 2][j][
+                    "state"] != tkinter.DISABLED:
+                    self.symbol = 'S'
+                    return matrix_list[i + 2][j]
+                if matrix_list[i][j]['text'] == 'S' and matrix_list[i + 2][j]['text'] == 'S' and matrix_list[i + 1][j]['state'] != tkinter.DISABLED:
+                    self.symbol = 'O'
+                    return matrix_list[i + 1][j]
+                if matrix_list[i + 1][j]['text'] == 'O' and matrix_list[i + 2][j]['text'] == 'S' and matrix_list[i][j]['state'] != tkinter.DISABLED:
+                    self.symbol = 'S'
+                    return matrix_list[i][j]
+
+        # SOS Check for Vertical SOS
+        for i in range(board_size):
+            for j in range(board_size - 2):
+                if matrix_list[i][j]['text'] == 'S' and matrix_list[i][j + 1]['text'] == 'O' and matrix_list[i][j + 2][
+                    "state"] != tkinter.DISABLED:
+                    self.symbol = 'S'
+                    return matrix_list[i][j + 2]
+                if matrix_list[i][j]['text'] == 'S' and matrix_list[i][j + 2]['text'] == 'S' and matrix_list[i][j + 1]['state'] != tkinter.DISABLED:
+                    self.symbol = 'O'
+                    return matrix_list[i][j + 1]
+                if matrix_list[i][j + 1]['text'] == 'O' and matrix_list[i][j + 2]['text'] == 'S' and matrix_list[i][j]['state'] != tkinter.DISABLED:
+                    self.symbol = 'S'
+                    return matrix_list[i][j]
+
+        # SOS Check for left diagonal SOS
+        for i in range(board_size - 2):
+            for j in range(board_size - 2):
+                if matrix_list[i][j]['text'] == 'S' and matrix_list[i + 1][j + 1]['text'] == 'O' and matrix_list[i + 2][j + 2][
+                    "state"] != tkinter.DISABLED:
+                    self.symbol = 'S'
+                    return matrix_list[i + 2][j + 2]
+                if matrix_list[i][j]['text'] == 'S' and matrix_list[i + 2][j + 2]['text'] == 'S' and matrix_list[i + 1][j + 1]['state'] != tkinter.DISABLED:
+                    self.symbol = 'O'
+                    return matrix_list[i + 1][j + 1]
+                if matrix_list[i + 1][j + 1]['text'] == 'O' and matrix_list[i + 2][j + 2]['text'] == 'S' and matrix_list[i][j]['state'] != tkinter.DISABLED:
+                    self.symbol = 'S'
+                    return matrix_list[i][j]
+
+        # SOS Check for right diagonal SOS
+        for i in range(board_size - 2):
+            for j in range(2, board_size):
+                if matrix_list[i][j]['text'] == 'S' and matrix_list[i + 1][j - 1]['text'] == 'O' and \
+                        matrix_list[i + 2][j - 2][
+                            "state"] != tkinter.DISABLED:
+                    self.symbol = 'S'
+                    return matrix_list[i + 2][j - 2]
+                if matrix_list[i][j]['text'] == 'S' and matrix_list[i + 2][j - 2]['text'] == 'S' and \
+                        matrix_list[i + 1][j - 1]['state'] != tkinter.DISABLED:
+                    self.symbol = 'O'
+                    return matrix_list[i + 1][j - 1]
+                if matrix_list[i + 1][j - 1]['text'] == 'O' and matrix_list[i + 2][j - 2]['text'] == 'S' and \
+                        matrix_list[i][j]['state'] != tkinter.DISABLED:
+                    self.symbol = 'S'
+                    return matrix_list[i][j]
+        return False
 
     def complete_sequence(self):
         pass
@@ -117,7 +180,6 @@ class SOSGameBase:
                 self.turn.set(value="Current Turn: Blue")
                 if self.blue_player.player_type == "Computer":
                     self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
-
 
     def set_game_type(self, game_type):
         """ Sets game type """
@@ -287,6 +349,7 @@ class GeneralSOSGame(SOSGameBase):
             self.blue_player.score.set(new_score)
             if points_scored == 0:
                 self.turn.set(value="Current Turn: Red")
+
         else:
             new_score = self.red_player.score.get() + points_scored
             self.red_player.score.set(new_score)

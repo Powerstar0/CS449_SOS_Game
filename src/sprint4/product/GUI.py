@@ -55,13 +55,17 @@ class SOS:
 
         ttk.Label(self.left_frame, text="Blue Player").pack(side=TOP)
         blue_player_type = StringVar(value="Human")
-        blue_player_choice = StringVar(value='S')
-        ttk.Radiobutton(self.left_frame, variable=blue_player_type, value="Human", text="Human", command=lambda player_type="Human": self.boardgame.blue_player.player_update(player_type)).pack(side=TOP)
-        ttk.Radiobutton(self.left_frame, variable=blue_player_choice, value='S', text="S",
-                        command=lambda symbol='S': blue_player.symbol_update(symbol)).pack(side=TOP)
-        ttk.Radiobutton(self.left_frame, variable=blue_player_choice, value='O', text="O",
-                        command=lambda symbol='O': blue_player.symbol_update(symbol)).pack(side=TOP)
-        ttk.Radiobutton(self.left_frame, variable=blue_player_type, value="Computer", text="Computer", command=lambda player_type="Computer": self.boardgame.blue_player.player_update(player_type)).pack(side=TOP)
+        self.blue_player_choice = StringVar(value='S')
+        ttk.Radiobutton(self.left_frame, variable=blue_player_type, value="Human", text="Human",
+                        command=lambda player_type="Human": self.boardgame.blue_player.player_update(player_type)).pack(
+            side=TOP)
+        ttk.Radiobutton(self.left_frame, variable=self.blue_player_choice, value='S', text="S",
+                        command=lambda symbol='S': self.boardgame.blue_player.symbol_update(symbol)).pack(side=TOP)
+        ttk.Radiobutton(self.left_frame, variable=self.blue_player_choice, value='O', text="O",
+                        command=lambda symbol='O': self.boardgame.blue_player.symbol_update(symbol)).pack(side=TOP)
+        ttk.Radiobutton(self.left_frame, variable=blue_player_type, value="Computer", text="Computer",
+                        command=lambda player_type="Computer": self.boardgame.blue_player.player_update(
+                            player_type)).pack(side=TOP)
 
         # Record game checkbox on bottom left
         ttk.Checkbutton(self.left_frame, text="Record").pack(side=BOTTOM)
@@ -73,13 +77,17 @@ class SOS:
         # Red player options (label and radio buttons) on right side
         ttk.Label(self.right_frame, text="Red Player").pack(side=TOP)
         red_player_type = StringVar(value="Human")
-        red_player_choice = StringVar(value='S')
-        ttk.Radiobutton(self.right_frame, variable=red_player_type, value="Human", text="Human", command=lambda player_type="Human": self.boardgame.red_player.player_update(player_type)).pack(side=TOP)
-        ttk.Radiobutton(self.right_frame, variable=red_player_choice, value='S', text="S",
-                        command=lambda symbol='S': red_player.symbol_update(symbol)).pack(side=TOP)
-        ttk.Radiobutton(self.right_frame, variable=red_player_choice, value='O', text="O",
-                        command=lambda symbol='O': red_player.symbol_update(symbol)).pack(side=TOP)
-        ttk.Radiobutton(self.right_frame, variable=red_player_type, value="Computer", text="Computer", command=lambda player_type="Computer": self.boardgame.red_player.player_update(player_type)).pack(side=TOP)
+        self.red_player_choice = StringVar(value='S')
+        ttk.Radiobutton(self.right_frame, variable=red_player_type, value="Human", text="Human",
+                        command=lambda player_type="Human": self.boardgame.red_player.player_update(player_type)).pack(
+            side=TOP)
+        ttk.Radiobutton(self.right_frame, variable=self.red_player_choice, value='S', text="S",
+                        command=lambda symbol='S': self.boardgame.red_player.symbol_update(symbol)).pack(side=TOP)
+        ttk.Radiobutton(self.right_frame, variable=self.red_player_choice, value='O', text="O",
+                        command=lambda symbol='O': self.boardgame.red_player.symbol_update(symbol)).pack(side=TOP)
+        ttk.Radiobutton(self.right_frame, variable=red_player_type, value="Computer", text="Computer",
+                        command=lambda player_type="Computer": self.boardgame.red_player.player_update(
+                            player_type)).pack(side=TOP)
 
         # Replay Button on bottom right
         ttk.Button(self.right_frame, text="Replay").pack(side=BOTTOM)
@@ -131,6 +139,11 @@ class SOS:
             self.red_score_label.pack_forget()
             self.blue_score_label_text.pack_forget()
             self.red_score_label_text.pack_forget()
+
+            # Set player's choice to S by default
+            self.blue_player_choice.set('S')
+            self.red_player_choice.set('S')
+
             try:
                 # Reset SOS sequence list
                 self.boardgame.complete_sos_list = []
@@ -158,7 +171,6 @@ class SOS:
             except (Exception,):
                 # If any errors occur, skip execution
                 pass
-
 
 
 # Main
