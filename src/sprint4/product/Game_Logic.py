@@ -5,7 +5,6 @@ from tkinter import *
 from Board import Board
 import random
 
-
 class Player:
     def __init__(self, player_type="Human"):
         # Set scores to 0
@@ -257,13 +256,16 @@ class SOSGameBase:
     def filled_cells(self):
         """ # Check to see if all cells are disabled """
         game_complete = True
-        for i in range(self.board_size):
-            for j in range(self.board_size):
-                if self.cell_matrix[i][j]["state"] == tkinter.DISABLED:
-                    pass
-                else:
-                    game_complete = False
-                    break
+        print("checking filled cells")
+        while game_complete:
+            for i in range(self.board_size):
+                for j in range(self.board_size):
+                    if self.cell_matrix[i][j]["state"] == tkinter.DISABLED:
+                        pass
+                    else:
+                        game_complete = False
+                        print(game_complete)
+            print(game_complete)
         return game_complete
 
     def color_sequence(self, cell1, cell2, cell3):
@@ -319,11 +321,13 @@ class GeneralSOSGame(SOSGameBase):
         super().__init__(blue_player, red_player)
         # Updates base game parameters with what was given
         super().__dict__.update(base_game.__dict__)
+        self.counter = 0
 
     def win_condition(self):
         """ Win condition for general SOS"""
         # If cells are disabled, determine winner based on score
         if self.filled_cells():
+            print("Filled cells found")
             if self.blue_player.score.get() > self.red_player.score.get():
                 print("Blue Player won")
                 messagebox.showinfo(title="Game Over",
@@ -349,17 +353,30 @@ class GeneralSOSGame(SOSGameBase):
             self.blue_player.score.set(new_score)
             if points_scored == 0:
                 self.turn.set(value="Current Turn: Red")
+                if self.red_player.player_type == "Computer":
+                    self.cell_update(self.red_player.move_selector(self.board_size, self.cell_matrix))
+            elif self.blue_player.player_type == "Computer":
+                self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
 
         else:
             new_score = self.red_player.score.get() + points_scored
             self.red_player.score.set(new_score)
             if points_scored == 0:
                 self.turn.set(value="Current Turn: Blue")
+                if self.blue_player.player_type == "Computer":
+                    self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
+            elif self.red_player.player_type == "Computer":
+                self.cell_update(self.red_player.move_selector(self.board_size, self.cell_matrix))
 
     def cell_update(self, cell):
+        self.counter += 1
+        print(self.counter)
         """ Updates cell with symbol """
         # Blue turn
         turn = self.turn.get()
+        if self.win_condition():
+            print("win condition found")
+            self.disable_buttons()
         if turn == "Current Turn: Blue":
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
