@@ -11,18 +11,18 @@ class SOS:
         self.current_turn = 0
 
         # Creates window
-        root = Tk()
-        root.geometry("800x600")
-        root.title("SOS Game")
+        self.root = Tk()
+        self.root.geometry("800x600")
+        self.root.title("SOS Game")
         # No ability to resize since component size don't scale
-        root.resizable(width=False, height=False)
+        self.root.resizable(width=False, height=False)
 
         # Create blue and red player classes
         blue_player = Player()
         red_player = Player()
 
         # Top Frame
-        top_frame = ttk.Frame(root)
+        top_frame = ttk.Frame(self.root)
         top_frame.pack(side=TOP, fill=X, pady=(0, 50))
 
         # SOS Label in top left
@@ -48,7 +48,7 @@ class SOS:
         Label(top_frame, text="Board Size").pack(side=RIGHT)
 
         # Left Frame
-        self.left_frame = ttk.Frame(root)
+        self.left_frame = ttk.Frame(self.root)
         self.left_frame.pack(side=LEFT, fill=Y)
 
         # Blue player options (label and radio buttons) on left side
@@ -71,7 +71,7 @@ class SOS:
         ttk.Checkbutton(self.left_frame, text="Record").pack(side=BOTTOM)
 
         # Right Frame
-        self.right_frame = ttk.Frame(root)
+        self.right_frame = ttk.Frame(self.root)
         self.right_frame.pack(side=RIGHT, fill=Y)
 
         # Red player options (label and radio buttons) on right side
@@ -96,7 +96,7 @@ class SOS:
         ttk.Button(self.right_frame, text="New Game", command=self.start_new_game).pack(side=BOTTOM)
 
         # Bottom Frame
-        self.bottom_frame = ttk.Frame(root)
+        self.bottom_frame = ttk.Frame(self.root)
         self.bottom_frame.pack(side=BOTTOM, fill=X)
 
         # Current Turn on bottom center
@@ -116,7 +116,7 @@ class SOS:
         self.red_score_label = ttk.Label(self.right_frame, textvariable=self.boardgame.red_player.score)
 
         # Execute GUI
-        root.mainloop()
+        self.root.mainloop()
 
     def start_new_game(self):
         """ Starts a new game """

@@ -136,6 +136,10 @@ class SOSGameBase:
         # Signals end of game
         self.game_over = False
 
+    def update_board(self):
+        """ Updates the board with current state (Only used for drawing the S and O for computer opponents)"""
+        self.board.update_idletasks()
+
     def new_board(self):
         """ Creates a new board with specified user size"""
         try:
@@ -164,6 +168,7 @@ class SOSGameBase:
         if turn == "Current Turn: Blue":
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
+            self.board.after(500, self.update_board())
             self.check_sos()
             if not self.win_condition():
                 self.turn.set(value="Current Turn: Red")
@@ -174,11 +179,13 @@ class SOSGameBase:
         else:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
+            self.board.after(500, self.update_board())
             self.check_sos()
             if not self.win_condition():
                 self.turn.set(value="Current Turn: Blue")
                 if self.blue_player.player_type == "Computer":
                     self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
+
 
     def set_game_type(self, game_type):
         """ Sets game type """
@@ -244,6 +251,7 @@ class SOSGameBase:
                         self.color_sequence(self.cell_matrix[i][j], self.cell_matrix[i + 1][j - 1],
                                             self.cell_matrix[i + 2][j - 2])
 
+
     def win_condition(self):
         """ Placeholder for derived classes """
         return False
@@ -265,8 +273,7 @@ class SOSGameBase:
                     else:
                         game_complete = False
                         print(game_complete)
-            print(game_complete)
-        return game_complete
+            return game_complete
 
     def color_sequence(self, cell1, cell2, cell3):
         """ Colors the sequence of cells """
@@ -380,6 +387,7 @@ class GeneralSOSGame(SOSGameBase):
         if turn == "Current Turn: Blue":
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
+            self.board.after(500, self.update_board())
             self.check_sos()
             if self.win_condition():
                 self.disable_buttons()
@@ -387,6 +395,7 @@ class GeneralSOSGame(SOSGameBase):
         else:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
+            self.board.after(500, self.update_board())
             self.check_sos()
             if self.win_condition():
                 self.disable_buttons()
