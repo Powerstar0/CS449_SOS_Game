@@ -160,6 +160,9 @@ class SOS:
                     self.blue_score_label.pack(side=TOP)
                     self.red_score_label.pack(side=TOP)
 
+                self.boardgame.blue_player.score.set(value=0)
+                self.boardgame.red_player.score.set(value=0)
+
                     # Create board instance
                 board = self.boardgame.new_board()
                 # Center the game board

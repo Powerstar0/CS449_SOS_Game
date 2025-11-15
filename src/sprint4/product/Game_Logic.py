@@ -334,7 +334,6 @@ class GeneralSOSGame(SOSGameBase):
         """ Win condition for general SOS"""
         # If cells are disabled, determine winner based on score
         if self.filled_cells():
-            print("Filled cells found")
             if self.blue_player.score.get() > self.red_player.score.get():
                 print("Blue Player won")
                 messagebox.showinfo(title="Game Over",
@@ -352,50 +351,42 @@ class GeneralSOSGame(SOSGameBase):
 
     def check_sos(self):
         """ Overload check_sos method"""
+        #print("Checking SOS")
         old_sos_list = self.complete_sos_list.copy()
         super().check_sos()
         points_scored = len(self.complete_sos_list) - len(old_sos_list)
-        if self.turn.get() == "Current Turn: Blue":
-            new_score = self.blue_player.score.get() + points_scored
-            self.blue_player.score.set(new_score)
-            if points_scored == 0:
-                self.turn.set(value="Current Turn: Red")
-                if self.red_player.player_type == "Computer":
-                    self.cell_update(self.red_player.move_selector(self.board_size, self.cell_matrix))
-            elif self.blue_player.player_type == "Computer":
-                self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
-
-        else:
-            new_score = self.red_player.score.get() + points_scored
-            self.red_player.score.set(new_score)
-            if points_scored == 0:
-                self.turn.set(value="Current Turn: Blue")
-                if self.blue_player.player_type == "Computer":
-                    self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
-            elif self.red_player.player_type == "Computer":
-                self.cell_update(self.red_player.move_selector(self.board_size, self.cell_matrix))
+        return points_scored
 
     def cell_update(self, cell):
-        self.counter += 1
-        print(self.counter)
         """ Updates cell with symbol """
         # Blue turn
         turn = self.turn.get()
-        if self.win_condition():
-            print("win condition found")
-            self.disable_buttons()
         if turn == "Current Turn: Blue":
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
             self.board.after(500, self.update_board())
-            self.check_sos()
-            if self.win_condition():
-                self.disable_buttons()
+            points_scored = self.check_sos()
+            new_score = self.blue_player.score.get() + points_scored
+            self.blue_player.score.set(new_score)
+            if not self.win_condition():
+                if points_scored == 0:
+                    self.turn.set(value="Current Turn: Red")
+                    if self.red_player.player_type == "Computer":
+                        self.cell_update(self.red_player.move_selector(self.board_size, self.cell_matrix))
+                elif self.blue_player.player_type == "Computer":
+                    self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
         # Red turn
         else:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
             self.board.after(500, self.update_board())
-            self.check_sos()
-            if self.win_condition():
-                self.disable_buttons()
+            points_scored = self.check_sos()
+            new_score = self.red_player.score.get() + points_scored
+            self.red_player.score.set(new_score)
+            if not self.win_condition():
+                if points_scored == 0:
+                    self.turn.set(value="Current Turn: Blue")
+                    if self.blue_player.player_type == "Computer":
+                        self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
+                elif self.red_player.player_type == "Computer":
+                    self.cell_update(self.red_player.move_selector(self.board_size, self.cell_matrix))
