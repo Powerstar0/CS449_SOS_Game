@@ -122,9 +122,9 @@ class SOSGameBase:
         self.game_type = "Simple Game"
         # Define blue and red players
         self.blue_player = blue_player
-        blue_player.score.set(0)
+        blue_player.score.set(value=0)
         self.red_player = red_player
-        red_player.score.set(0)
+        red_player.score.set(value=0)
         # Set variable for the current turn
         self.turn = StringVar(value="Current Turn: Blue")
         # Create Board Placeholder
@@ -168,7 +168,7 @@ class SOSGameBase:
         if turn == "Current Turn: Blue":
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
-            self.board.after(500, self.update_board())
+            self.board.after(250, self.update_board())
             self.check_sos()
             if not self.win_condition():
                 self.turn.set(value="Current Turn: Red")
@@ -179,7 +179,7 @@ class SOSGameBase:
         else:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
-            self.board.after(500, self.update_board())
+            self.board.after(250, self.update_board())
             self.check_sos()
             if not self.win_condition():
                 self.turn.set(value="Current Turn: Blue")
@@ -264,7 +264,6 @@ class SOSGameBase:
     def filled_cells(self):
         """ # Check to see if all cells are disabled """
         game_complete = True
-        print("checking filled cells")
         while game_complete:
             for i in range(self.board_size):
                 for j in range(self.board_size):
@@ -272,7 +271,6 @@ class SOSGameBase:
                         pass
                     else:
                         game_complete = False
-                        print(game_complete)
             return game_complete
 
     def color_sequence(self, cell1, cell2, cell3):
@@ -351,7 +349,6 @@ class GeneralSOSGame(SOSGameBase):
 
     def check_sos(self):
         """ Overload check_sos method"""
-        #print("Checking SOS")
         old_sos_list = self.complete_sos_list.copy()
         super().check_sos()
         points_scored = len(self.complete_sos_list) - len(old_sos_list)
