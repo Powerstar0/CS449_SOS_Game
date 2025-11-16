@@ -24,15 +24,15 @@ class Player:
 
 class ComputerPlayer(Player):
     def __init__(self, base_player):
+        # Updates base game parameters with what was given
         super().__init__()
         super().__dict__.update(base_player.__dict__)
         self.difficulty = "Simple"
         self.player_type = "Computer"
-        # Updates base game parameters with what was given
 
     def move_selector(self, board_size, matrix_list):
-        if self.sos_identification(board_size, matrix_list):
-            return self.sos_identification(board_size, matrix_list)
+        if self.make_sos_move(board_size, matrix_list):
+            return self.make_sos_move(board_size, matrix_list)
         return self.make_random_move(board_size, matrix_list)
 
     def make_random_move(self, board_size, matrix_list):
@@ -48,7 +48,7 @@ class ComputerPlayer(Player):
             self.symbol = 'O'
         return matrix_list[row][col]
 
-    def sos_identification(self, board_size, matrix_list):
+    def make_sos_move(self, board_size, matrix_list):
         """ Identifies and makes a completing move if an SOS can be made """
         # SOS Check For Horizontal SOS
         for i in range(board_size - 2):
@@ -306,12 +306,14 @@ class SimpleSOSGame(SOSGameBase):
 
     def win_condition(self):
         """ First to complete SOS"""
+        # Checks to see if a sos has been made
         if self.complete_sos_list:
             self.disable_buttons()
             messagebox.showinfo(title="Game Over",
                                 message=f"{self.turn.get()[13:]} wins")
             self.game_over = True
             return True
+        # Check to see if cells are filled/tied
         elif self.filled_cells():
             self.disable_buttons()
             messagebox.showinfo(title="Game Over", message="Tie")
@@ -333,24 +335,22 @@ class GeneralSOSGame(SOSGameBase):
         # If cells are disabled, determine winner based on score
         if self.filled_cells():
             if self.blue_player.score.get() > self.red_player.score.get():
-                print("Blue Player won")
                 messagebox.showinfo(title="Game Over",
                                     message=" Blue wins")
             elif self.blue_player.score.get() == self.red_player.score.get():
-                print("Tie")
                 messagebox.showinfo(title="Game Over",
                                     message=f"Tie")
             else:
-                print("Red Player won")
                 messagebox.showinfo(title="Game Over",
                                     message=f"Red wins")
             return True
         return False
 
     def check_sos(self):
-        """ Overload check_sos method"""
+        """ Overload check_sos method for general game """
         old_sos_list = self.complete_sos_list.copy()
         super().check_sos()
+        # Return the points scored via the different in length of the sos list
         points_scored = len(self.complete_sos_list) - len(old_sos_list)
         return points_scored
 
@@ -361,29 +361,37 @@ class GeneralSOSGame(SOSGameBase):
         if turn == "Current Turn: Blue":
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
+            # updates board
             self.board.after(500, self.update_board())
             points_scored = self.check_sos()
             new_score = self.blue_player.score.get() + points_scored
             self.blue_player.score.set(new_score)
             if not self.win_condition():
+                # If no points were scored, switch turns
                 if points_scored == 0:
                     self.turn.set(value="Current Turn: Red")
+                    # Computer move
                     if self.red_player.player_type == "Computer":
                         self.cell_update(self.red_player.move_selector(self.board_size, self.cell_matrix))
+                # Computer move
                 elif self.blue_player.player_type == "Computer":
                     self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
         # Red turn
         else:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
+            # updates board
             self.board.after(500, self.update_board())
             points_scored = self.check_sos()
             new_score = self.red_player.score.get() + points_scored
             self.red_player.score.set(new_score)
             if not self.win_condition():
+                # If no points were scored, switch turns
                 if points_scored == 0:
                     self.turn.set(value="Current Turn: Blue")
+                    # Computer move
                     if self.blue_player.player_type == "Computer":
                         self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
+                # Computer move
                 elif self.red_player.player_type == "Computer":
                     self.cell_update(self.red_player.move_selector(self.board_size, self.cell_matrix))
