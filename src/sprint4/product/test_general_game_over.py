@@ -538,3 +538,4 @@ class TestAC73_ContinuingGame:
 
         # Assert - Game still continues with one cell left
         assert general_game.filled_cells() == False
+
