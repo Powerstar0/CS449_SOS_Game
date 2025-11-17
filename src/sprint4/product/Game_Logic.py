@@ -110,9 +110,6 @@ class ComputerPlayer(Player):
                     return matrix_list[i][j]
         return False
 
-    def complete_sequence(self):
-        pass
-
 
 class SOSGameBase:
     def __init__(self, blue_player, red_player, board_size=3):
@@ -328,7 +325,6 @@ class GeneralSOSGame(SOSGameBase):
         super().__init__(blue_player, red_player)
         # Updates base game parameters with what was given
         super().__dict__.update(base_game.__dict__)
-        self.counter = 0
 
     def win_condition(self):
         """ Win condition for general SOS"""

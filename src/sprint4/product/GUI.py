@@ -8,8 +8,6 @@ class SOS:
     def __init__(self):
         """ Initialize SOS game GUI """
 
-        self.current_turn = 0
-
         # Creates window
         self.root = Tk()
         self.root.geometry("800x600")
@@ -105,9 +103,6 @@ class SOS:
         # Current game mode placeholder variable
         self.game_mode_label = ttk.Label(self.bottom_frame)
         self.game_mode_label.pack(side=BOTTOM)
-
-        # Board Attribute
-        self.sos_board = None
 
         # Placeholder labels for the score that will be hidden in a simple game or configured in a general game
         self.blue_score_label_text = Label(self.left_frame, text="Blue Player Score:")

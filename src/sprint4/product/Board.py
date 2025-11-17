@@ -26,8 +26,6 @@ class Board(Canvas):
         self.column_width = 0
         self.row_height = 0
 
-        self.overlay = None
-
     # Start a new game
     def new_game(self):
         # Call the draw function
