@@ -23,50 +23,17 @@ class SOS:
         top_frame = ttk.Frame(self.root)
         top_frame.pack(side=TOP, fill=X, pady=(0, 50))
 
-        # SOS Label in top left
-        ttk.Label(top_frame, text="SOS").pack(side=LEFT)
-
         # Create the board game logic instance (containing function to make the board)
         self.boardgame = SOSGameBase(blue_player, red_player)
 
-        # Radio buttons for game type next to SOS label
-        self.boardgame.game_type = StringVar(value="Simple Game")
-        ttk.Radiobutton(top_frame, variable=self.boardgame.game_type, value="Simple Game", text="Simple Game").pack(
-            side=LEFT,
-            anchor=NW)
-        ttk.Radiobutton(top_frame, variable=self.boardgame.game_type, value="General Game", text="General Game").pack(
-            side=LEFT,
-            anchor=NW)
+        # Create game selection buttons
+        self.game_selection_panel(top_frame)
 
-        # Prompt to ask user for board size in upper right
-        self.board_size = IntVar(value=3)
-        Entry(top_frame, width=2, textvariable=self.board_size).pack(side=RIGHT)
+        # Create board size prompt
+        self.board_size_panel(top_frame)
 
-        # Board size prompt label
-        Label(top_frame, text="Board Size").pack(side=RIGHT)
-
-        # Left Frame
-        self.left_frame = ttk.Frame(self.root)
-        self.left_frame.pack(side=LEFT, fill=Y)
-
-        # Blue player options (label and radio buttons) on left side
-
-        ttk.Label(self.left_frame, text="Blue Player").pack(side=TOP)
-        blue_player_type = StringVar(value="Human")
-        self.blue_player_choice = StringVar(value='S')
-        ttk.Radiobutton(self.left_frame, variable=blue_player_type, value="Human", text="Human",
-                        command=lambda player_type="Human": self.boardgame.blue_player.player_update(player_type)).pack(
-            side=TOP)
-        ttk.Radiobutton(self.left_frame, variable=self.blue_player_choice, value='S', text="S",
-                        command=lambda symbol='S': self.boardgame.blue_player.symbol_update(symbol)).pack(side=TOP)
-        ttk.Radiobutton(self.left_frame, variable=self.blue_player_choice, value='O', text="O",
-                        command=lambda symbol='O': self.boardgame.blue_player.symbol_update(symbol)).pack(side=TOP)
-        ttk.Radiobutton(self.left_frame, variable=blue_player_type, value="Computer", text="Computer",
-                        command=lambda player_type="Computer": self.boardgame.blue_player.player_update(
-                            player_type)).pack(side=TOP)
-
-        # Record game checkbox on bottom left
-        ttk.Checkbutton(self.left_frame, text="Record").pack(side=BOTTOM)
+        # Populate left frame
+        self.left_frame_panel()
 
         # Right Frame
         self.right_frame = ttk.Frame(self.root)
@@ -113,6 +80,51 @@ class SOS:
 
         # Execute GUI
         self.root.mainloop()
+
+    def game_selection_panel(self, frame):
+        # SOS Label in top left
+        ttk.Label(frame, text="SOS").pack(side=LEFT)
+
+        # Radio buttons for game type next to SOS label
+        self.boardgame.game_type = StringVar(value="Simple Game")
+        ttk.Radiobutton(frame, variable=self.boardgame.game_type, value="Simple Game", text="Simple Game").pack(
+            side=LEFT,
+            anchor=NW)
+        ttk.Radiobutton(frame, variable=self.boardgame.game_type, value="General Game", text="General Game").pack(
+            side=LEFT,
+            anchor=NW)
+
+    def board_size_panel(self, frame):
+        # Prompt to ask user for board size in upper right
+        self.board_size = IntVar(value=3)
+        Entry(frame, width=2, textvariable=self.board_size).pack(side=RIGHT)
+
+        # Board size prompt label
+        Label(frame, text="Board Size").pack(side=RIGHT)
+
+    def left_frame_panel(self):
+        # Left Frame
+        self.left_frame = ttk.Frame(self.root)
+        self.left_frame.pack(side=LEFT, fill=Y)
+
+        # Blue player options (label and radio buttons) on left side
+
+        ttk.Label(self.left_frame, text="Blue Player").pack(side=TOP)
+        blue_player_type = StringVar(value="Human")
+        self.blue_player_choice = StringVar(value='S')
+        ttk.Radiobutton(self.left_frame, variable=blue_player_type, value="Human", text="Human",
+                        command=lambda player_type="Human": self.boardgame.blue_player.player_update(player_type)).pack(
+            side=TOP)
+        ttk.Radiobutton(self.left_frame, variable=self.blue_player_choice, value='S', text="S",
+                        command=lambda symbol='S': self.boardgame.blue_player.symbol_update(symbol)).pack(side=TOP)
+        ttk.Radiobutton(self.left_frame, variable=self.blue_player_choice, value='O', text="O",
+                        command=lambda symbol='O': self.boardgame.blue_player.symbol_update(symbol)).pack(side=TOP)
+        ttk.Radiobutton(self.left_frame, variable=blue_player_type, value="Computer", text="Computer",
+                        command=lambda player_type="Computer": self.boardgame.blue_player.player_update(
+                            player_type)).pack(side=TOP)
+
+        # Record game checkbox on bottom left
+        ttk.Checkbutton(self.left_frame, text="Record").pack(side=BOTTOM)
 
     def start_new_game(self):
         """ Starts a new game """
