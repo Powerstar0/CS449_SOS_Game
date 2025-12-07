@@ -54,8 +54,8 @@ class Board(Canvas):
                 cell_button.config(command=lambda b=cell_button: self.cell_update_function(b))
 
                 # Assign cells rows and columns
-                cell_button.row = column
-                cell_button.column = row
+                cell_button.row = row
+                cell_button.column = column
 
                 # Add button to the row button
                 row_buttons.append(cell_button)

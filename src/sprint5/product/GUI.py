@@ -96,7 +96,7 @@ class SOS:
         # Record game checkbox on bottom left
         self.record_game_var = BooleanVar()
         self.record_game_var.set(False)
-        record_game_button = ttk.Checkbutton(self.left_frame, text="Record", variable=self.record_game_var, onvalue=True, offvalue=False)
+        record_game_button = ttk.Checkbutton(self.left_frame, text="Record", variable=self.record_game_var, onvalue=True, offvalue=False, command=self.boardgame.recorded_game_update(self.record_game_var.get()))
         record_game_button.pack(side=BOTTOM)
 
     def right_frame_panel(self):
@@ -126,7 +126,7 @@ class SOS:
         self.red_score_label = ttk.Label(self.right_frame, textvariable=self.boardgame.red_player.score)
 
         # Replay Button on bottom right
-        self.replay_button = ttk.Button(self.right_frame, text="Replay", command=self.boardgame.replay_recorded_game)
+        self.replay_button = ttk.Button(self.right_frame, text="Replay", command=self.replay_game)
         self.replay_button.pack(side=BOTTOM)
 
         # New Game Button on bottom right
@@ -144,42 +144,6 @@ class SOS:
         # Current game mode placeholder variable
         self.game_mode_label = ttk.Label(self.bottom_frame)
         self.game_mode_label.pack(side=BOTTOM)
-
-    def start_new_game(self):
-        """ Starts a new game """
-        if messagebox.askyesno(title="New Game",
-                               message="Are you sure you want to make a new game?"):
-            self.choose_player_types()
-            # Sets board size based on radio buttons
-            self.boardgame.turn.set("Current Turn: Blue")
-            self.boardgame.board_size = self.board_size.get()
-            self.turn_label.pack(side=BOTTOM)
-
-            # Set player's choice to S by default
-            self.blue_player_choice.set('S')
-            self.red_player_choice.set('S')
-
-            # Sets whether the game will be recorded
-            self.boardgame.recorded_game = self.record_game_var.get()
-
-            try:
-                self.choose_game_mode()
-
-                # Reset Scores
-                self.boardgame.blue_player.score.set(value=0)
-                self.boardgame.red_player.score.set(value=0)
-
-                # Create board instance
-                board = self.boardgame.new_board()
-                # Center the game board
-                board.place(anchor=CENTER, relx=.5, rely=.5)
-                # Displays current game mode
-                self.game_mode_label.config(text=f"Current Game Mode: {self.boardgame.game_type.get()}")
-
-                self.boardgame.start_game()
-            except (Exception,):
-                # If any errors occur, skip execution
-                pass
 
     def choose_game_mode(self):
         """ Sets the game mode """
@@ -226,6 +190,87 @@ class SOS:
         else:
             self.boardgame.red_player = Player()
 
+    def start_new_game(self):
+        """ Starts a new game """
+        if messagebox.askyesno(title="New Game",
+                               message="Are you sure you want to make a new game?"):
+            self.choose_player_types()
+            # Sets board size based on radio buttons
+            self.boardgame.turn.set("Current Turn: Blue")
+            self.boardgame.board_size = self.board_size.get()
+            self.turn_label.pack(side=BOTTOM)
+
+            # Set player's choice to S by default
+            self.blue_player_choice.set('S')
+            self.red_player_choice.set('S')
+
+            # Sets whether the game will be recorded
+            self.boardgame.recorded_game = self.record_game_var.get()
+
+            try:
+                self.choose_game_mode()
+
+                # Reset Scores
+                self.boardgame.blue_player.score.set(value=0)
+                self.boardgame.red_player.score.set(value=0)
+
+                # Create board instance
+                board = self.boardgame.new_board()
+                # Center the game board
+                board.place(anchor=CENTER, relx=.5, rely=.5)
+                # Displays current game mode
+                self.game_mode_label.config(text=f"Current Game Mode: {self.boardgame.game_type.get()}")
+
+                self.boardgame.start_game()
+            except (Exception,):
+                # If any errors occur, skip execution
+                pass
+
+    def replay_game(self):
+        """ Clears board """
+        self.boardgame.blue_player = Player()
+        self.boardgame.red_player = Player()
+        # Sets board size based on radio buttons
+        self.boardgame.turn.set("Current Turn: Blue")
+
+        # Disable recording
+        self.record_game_var.set(False)
+        self.boardgame.recorded_game = self.record_game_var.get()
+
+        # Get previous board size
+        cur.execute('''SELECT *
+                       FROM public."Move"
+                       LIMIT 1''')
+
+        rows = cur.fetchall()
+
+        # Get board size from database
+        self.boardgame.board_size = rows[0][5]
+
+        self.turn_label.pack(side=BOTTOM)
+
+        try:
+            # Set game type from database
+            print(rows[0][6])
+            self.boardgame.game_type.set(rows[0][6])
+            self.choose_game_mode()
+
+            # Reset Scores
+            self.boardgame.blue_player.score.set(value=0)
+            self.boardgame.red_player.score.set(value=0)
+
+            # Create board instance
+            board = self.boardgame.new_board()
+            # Center the game board
+            board.place(anchor=CENTER, relx=.5, rely=.5)
+            # Displays current game mode
+            self.game_mode_label.config(text=f"Current Game Mode: {self.boardgame.game_type.get()}")
+
+            self.boardgame.replay_recorded_game()
+
+        except (Exception,):
+            # If any errors occur, skip execution
+            pass
 
 # Main
 if __name__ == '__main__':

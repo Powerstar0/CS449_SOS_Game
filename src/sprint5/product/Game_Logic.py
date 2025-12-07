@@ -193,7 +193,7 @@ class SOSGameBase:
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
             print(cell.row)
             print(cell.column)
-            self.record_move('Red', cell.row, cell.column, self.blue_player.symbol)
+            self.record_move('Red', cell.row, cell.column, self.red_player.symbol)
             self.board.after(250, self.update_board())
             self.check_sos()
             if not self.win_condition():
@@ -318,16 +318,32 @@ class SOSGameBase:
         """ Replays the last played game """
         print("Replaying")
 
+        # Get all moves from last game
+        cur.execute('''SELECT *
+                       FROM public."Move"''')
+
+        rows = cur.fetchall()
+
+        for row in rows:
+            #print(row)
+            if row[1] == "Blue":
+                self.blue_player.symbol = row[4]
+            elif row[1] == "Red":
+                self.red_player.symbol = row[4]
+            self.cell_update(self.cell_matrix[row[2]][row[3]])
+
+
 
     def record_move(self, color, row, column, letter):
         """ Record a move """
-        print("Recording")
-        current_timestamp = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S.%f')
-        print("current_timestamp:", current_timestamp)
         if self.recorded_game:
-            cur.execute(f'''INSERT INTO public."Move" ("timestamp", player, row, "column", symbol) VALUES ('{current_timestamp}', '{color}', {row}, {column}, '{letter}')''')
-            print("Move Recorded")
-            conn.commit()
+            print("Recording")
+            current_timestamp = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S.%f')
+            print("current_timestamp:", current_timestamp)
+            if self.recorded_game:
+                cur.execute(f'''INSERT INTO public."Move" ("timestamp", player, row, "column", symbol, board_size, game_type) VALUES ('{current_timestamp}', '{color}', {row}, {column}, '{letter}', {self.board_size}, '{self.game_type.get()}') ''')
+                print("Move Recorded")
+                conn.commit()
 
     def create_record_table(self):
         """ Create a new table of moves """
@@ -358,6 +374,11 @@ ALTER TABLE IF EXISTS public."Move"
 
         conn.commit()
 
+    def recorded_game_update(self, recorded_setting):
+        """ Update if a game is to be recorded """
+        self.recorded_game = recorded_setting
+
+
 
 class SimpleSOSGame(SOSGameBase):
     def __init__(self, base_game, blue_player, red_player):
@@ -365,6 +386,7 @@ class SimpleSOSGame(SOSGameBase):
         super().__init__(blue_player, red_player)
         # Updates base game parameters with what was given
         super().__dict__.update(base_game.__dict__)
+        #self.game_type = 'Simple Game'
 
     def win_condition(self):
         """ First to complete SOS"""
@@ -390,6 +412,7 @@ class GeneralSOSGame(SOSGameBase):
         super().__init__(blue_player, red_player)
         # Updates base game parameters with what was given
         super().__dict__.update(base_game.__dict__)
+        #self.game_type = 'General Game'
 
     def win_condition(self):
         """ Win condition for general SOS"""
@@ -422,7 +445,7 @@ class GeneralSOSGame(SOSGameBase):
         if turn == "Current Turn: Blue":
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
-            self.record_move()
+            self.record_move('Blue', cell.row, cell.column, self.blue_player.symbol)
             # updates board
             self.board.after(500, self.update_board())
             points_scored = self.check_sos()
@@ -442,7 +465,7 @@ class GeneralSOSGame(SOSGameBase):
         else:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
-            self.record_move()
+            self.record_move('Red', cell.row, cell.column, self.red_player.symbol)
             # updates board
             self.board.after(500, self.update_board())
             points_scored = self.check_sos()
