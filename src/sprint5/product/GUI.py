@@ -228,8 +228,14 @@ class SOS:
 
     def replay_game(self):
         """ Clears board """
-        self.boardgame.blue_player = Player()
-        self.boardgame.red_player = Player()
+
+        self.red_player_type.set("Human")
+        self.blue_player_type.set("Human")
+        self.boardgame.blue_player.player_type = "Human"
+        self.boardgame.red_player.player_type = "Human"
+
+        self.choose_player_types()
+
         # Sets board size based on radio buttons
         self.boardgame.turn.set("Current Turn: Blue")
 
