@@ -94,7 +94,10 @@ class SOS:
         self.blue_score_label = ttk.Label(self.left_frame, textvariable=self.boardgame.blue_player.score)
 
         # Record game checkbox on bottom left
-        ttk.Checkbutton(self.left_frame, text="Record").pack(side=BOTTOM)
+        self.record_game_var = BooleanVar()
+        self.record_game_var.set(False)
+        record_game_button = ttk.Checkbutton(self.left_frame, text="Record", variable=self.record_game_var, onvalue=True, offvalue=False)
+        record_game_button.pack(side=BOTTOM)
 
     def right_frame_panel(self):
         """ Creates and populates the right frame"""
@@ -123,7 +126,8 @@ class SOS:
         self.red_score_label = ttk.Label(self.right_frame, textvariable=self.boardgame.red_player.score)
 
         # Replay Button on bottom right
-        ttk.Button(self.right_frame, text="Replay").pack(side=BOTTOM)
+        self.replay_button = ttk.Button(self.right_frame, text="Replay", command=self.boardgame.replay_recorded_game)
+        self.replay_button.pack(side=BOTTOM)
 
         # New Game Button on bottom right
         ttk.Button(self.right_frame, text="New Game", command=self.start_new_game).pack(side=BOTTOM)
@@ -155,6 +159,9 @@ class SOS:
             self.blue_player_choice.set('S')
             self.red_player_choice.set('S')
 
+            # Sets whether the game will be recorded
+            self.boardgame.recorded_game = self.record_game_var.get()
+
             try:
                 self.choose_game_mode()
 
@@ -175,8 +182,10 @@ class SOS:
                 pass
 
     def choose_game_mode(self):
+        """ Sets the game mode """
         # Reset SOS sequence list
         self.boardgame.complete_sos_list = []
+
         # Convert the Base Game Template to either Simple Game
         if self.boardgame.game_type.get() == "Simple Game":
             self.boardgame = SimpleSOSGame(self.boardgame, self.boardgame.blue_player,
@@ -207,6 +216,7 @@ class SOS:
             self.red_score_label.pack(side=TOP)
 
     def choose_player_types(self):
+        """ Checks Player type """
         if self.boardgame.blue_player.player_type == "Computer":
             self.boardgame.blue_player = ComputerPlayer(self.boardgame.blue_player)
         else:

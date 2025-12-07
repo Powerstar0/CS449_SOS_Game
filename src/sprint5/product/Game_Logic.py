@@ -132,6 +132,8 @@ class SOSGameBase:
         self.complete_sos_list = []
         # Signals end of game
         self.game_over = False
+        # Recorded Game
+        self.recorded_game = False
 
     def update_board(self):
         """ Updates the board with current state (Only used for drawing the S and O for computer opponents)"""
@@ -165,6 +167,7 @@ class SOSGameBase:
         if turn == "Current Turn: Blue":
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
+            self.record_move()
             self.board.after(250, self.update_board())
             self.check_sos()
             if not self.win_condition():
@@ -176,6 +179,7 @@ class SOSGameBase:
         else:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
+            self.record_move()
             self.board.after(250, self.update_board())
             self.check_sos()
             if not self.win_condition():
@@ -294,6 +298,17 @@ class SOSGameBase:
                 self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
 
 
+    def replay_recorded_game(self):
+        """ Replays the last played game """
+        print("Replaying")
+
+
+    def record_move(self):
+        """ Record a move """
+        if self.recorded_game:
+            print("Move Recorded")
+
+
 class SimpleSOSGame(SOSGameBase):
     def __init__(self, base_game, blue_player, red_player):
         # Initialize base game template
@@ -357,6 +372,7 @@ class GeneralSOSGame(SOSGameBase):
         if turn == "Current Turn: Blue":
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
+            self.record_move()
             # updates board
             self.board.after(500, self.update_board())
             points_scored = self.check_sos()
@@ -376,6 +392,7 @@ class GeneralSOSGame(SOSGameBase):
         else:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
+            self.record_move()
             # updates board
             self.board.after(500, self.update_board())
             points_scored = self.check_sos()
