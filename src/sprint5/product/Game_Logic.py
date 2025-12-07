@@ -331,12 +331,13 @@ class SOSGameBase:
 
         rows = cur.fetchall()
 
+        # For each move, set the respective symbol to what was recorded in the data
         for row in rows:
-            # print(row)
             if row[1] == "Blue":
                 self.blue_player.symbol = row[4]
             elif row[1] == "Red":
                 self.red_player.symbol = row[4]
+            # Update the specified cell
             self.cell_update(self.cell_matrix[row[2]][row[3]])
 
     def record_move(self, color, row, column, letter):
