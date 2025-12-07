@@ -19,12 +19,12 @@ class SOS:
         blue_player = Player()
         red_player = Player()
 
+        # Create the board game logic instance (containing function to make the board)
+        self.boardgame = SOSGameBase(blue_player, red_player)
+
         # Top Frame
         top_frame = ttk.Frame(self.root)
         top_frame.pack(side=TOP, fill=X, pady=(0, 50))
-
-        # Create the board game logic instance (containing function to make the board)
-        self.boardgame = SOSGameBase(blue_player, red_player)
 
         # Create game selection buttons
         self.game_selection_panel(top_frame)
@@ -35,53 +35,17 @@ class SOS:
         # Populate left frame
         self.left_frame_panel()
 
-        # Right Frame
-        self.right_frame = ttk.Frame(self.root)
-        self.right_frame.pack(side=RIGHT, fill=Y)
+        # Populate right frame
+        self.right_frame_panel()
 
-        # Red player options (label and radio buttons) on right side
-        ttk.Label(self.right_frame, text="Red Player").pack(side=TOP)
-        red_player_type = StringVar(value="Human")
-        self.red_player_choice = StringVar(value='S')
-        ttk.Radiobutton(self.right_frame, variable=red_player_type, value="Human", text="Human",
-                        command=lambda player_type="Human": self.boardgame.red_player.player_update(player_type)).pack(
-            side=TOP)
-        ttk.Radiobutton(self.right_frame, variable=self.red_player_choice, value='S', text="S",
-                        command=lambda symbol='S': self.boardgame.red_player.symbol_update(symbol)).pack(side=TOP)
-        ttk.Radiobutton(self.right_frame, variable=self.red_player_choice, value='O', text="O",
-                        command=lambda symbol='O': self.boardgame.red_player.symbol_update(symbol)).pack(side=TOP)
-        ttk.Radiobutton(self.right_frame, variable=red_player_type, value="Computer", text="Computer",
-                        command=lambda player_type="Computer": self.boardgame.red_player.player_update(
-                            player_type)).pack(side=TOP)
-
-        # Replay Button on bottom right
-        ttk.Button(self.right_frame, text="Replay").pack(side=BOTTOM)
-
-        # New Game Button on bottom right
-        ttk.Button(self.right_frame, text="New Game", command=self.start_new_game).pack(side=BOTTOM)
-
-        # Bottom Frame
-        self.bottom_frame = ttk.Frame(self.root)
-        self.bottom_frame.pack(side=BOTTOM, fill=X)
-
-        # Current Turn on bottom center
-        self.turn_label = ttk.Label(self.bottom_frame, textvariable=self.boardgame.turn)
-
-        # Current game mode placeholder variable
-        self.game_mode_label = ttk.Label(self.bottom_frame)
-        self.game_mode_label.pack(side=BOTTOM)
-
-        # Placeholder labels for the score that will be hidden in a simple game or configured in a general game
-        self.blue_score_label_text = Label(self.left_frame, text="Blue Player Score:")
-        self.blue_score_label = ttk.Label(self.left_frame, textvariable=self.boardgame.blue_player.score)
-
-        self.red_score_label_text = Label(self.right_frame, text="Red Player Score:")
-        self.red_score_label = ttk.Label(self.right_frame, textvariable=self.boardgame.red_player.score)
+        # Populate the bottom frame
+        self.bottom_frame_panel()
 
         # Execute GUI
         self.root.mainloop()
 
     def game_selection_panel(self, frame):
+        """ Places the game selection panel """
         # SOS Label in top left
         ttk.Label(frame, text="SOS").pack(side=LEFT)
 
@@ -95,6 +59,7 @@ class SOS:
             anchor=NW)
 
     def board_size_panel(self, frame):
+        """ Places the board size panel """
         # Prompt to ask user for board size in upper right
         self.board_size = IntVar(value=3)
         Entry(frame, width=2, textvariable=self.board_size).pack(side=RIGHT)
@@ -103,6 +68,7 @@ class SOS:
         Label(frame, text="Board Size").pack(side=RIGHT)
 
     def left_frame_panel(self):
+        """ Creates and populates the left frame """
         # Left Frame
         self.left_frame = ttk.Frame(self.root)
         self.left_frame.pack(side=LEFT, fill=Y)
@@ -110,21 +76,70 @@ class SOS:
         # Blue player options (label and radio buttons) on left side
 
         ttk.Label(self.left_frame, text="Blue Player").pack(side=TOP)
-        blue_player_type = StringVar(value="Human")
+        self.blue_player_type = StringVar(value="Human")
         self.blue_player_choice = StringVar(value='S')
-        ttk.Radiobutton(self.left_frame, variable=blue_player_type, value="Human", text="Human",
+        ttk.Radiobutton(self.left_frame, variable=self.blue_player_type, value="Human", text="Human",
                         command=lambda player_type="Human": self.boardgame.blue_player.player_update(player_type)).pack(
             side=TOP)
         ttk.Radiobutton(self.left_frame, variable=self.blue_player_choice, value='S', text="S",
                         command=lambda symbol='S': self.boardgame.blue_player.symbol_update(symbol)).pack(side=TOP)
         ttk.Radiobutton(self.left_frame, variable=self.blue_player_choice, value='O', text="O",
                         command=lambda symbol='O': self.boardgame.blue_player.symbol_update(symbol)).pack(side=TOP)
-        ttk.Radiobutton(self.left_frame, variable=blue_player_type, value="Computer", text="Computer",
+        ttk.Radiobutton(self.left_frame, variable=self.blue_player_type, value="Computer", text="Computer",
                         command=lambda player_type="Computer": self.boardgame.blue_player.player_update(
                             player_type)).pack(side=TOP)
 
+        # Placeholder labels for the score that will be hidden in a simple game or configured in a general game
+        self.blue_score_label_text = Label(self.left_frame, text="Blue Player Score:")
+        self.blue_score_label = ttk.Label(self.left_frame, textvariable=self.boardgame.blue_player.score)
+
         # Record game checkbox on bottom left
         ttk.Checkbutton(self.left_frame, text="Record").pack(side=BOTTOM)
+
+    def right_frame_panel(self):
+        """ Creates and populates the right frame"""
+        # Right Frame
+        self.right_frame = ttk.Frame(self.root)
+        self.right_frame.pack(side=RIGHT, fill=Y)
+
+        # Red player options (label and radio buttons) on right side
+        ttk.Label(self.right_frame, text="Red Player").pack(side=TOP)
+        self.red_player_type = StringVar(value="Human")
+        self.red_player_choice = StringVar(value='S')
+        ttk.Radiobutton(self.right_frame, variable=self.red_player_type, value="Human", text="Human",
+                        command=lambda player_type="Human": self.boardgame.red_player.player_update(player_type)).pack(
+            side=TOP)
+        ttk.Radiobutton(self.right_frame, variable=self.red_player_choice, value='S', text="S",
+                        command=lambda symbol='S': self.boardgame.red_player.symbol_update(symbol)).pack(side=TOP)
+        ttk.Radiobutton(self.right_frame, variable=self.red_player_choice, value='O', text="O",
+                        command=lambda symbol='O': self.boardgame.red_player.symbol_update(symbol)).pack(side=TOP)
+        ttk.Radiobutton(self.right_frame, variable=self.red_player_type, value="Computer", text="Computer",
+                        command=lambda player_type="Computer": self.boardgame.red_player.player_update(
+                            player_type)).pack(side=TOP)
+
+
+        # Score Label
+        self.red_score_label_text = Label(self.right_frame, text="Red Player Score:")
+        self.red_score_label = ttk.Label(self.right_frame, textvariable=self.boardgame.red_player.score)
+
+        # Replay Button on bottom right
+        ttk.Button(self.right_frame, text="Replay").pack(side=BOTTOM)
+
+        # New Game Button on bottom right
+        ttk.Button(self.right_frame, text="New Game", command=self.start_new_game).pack(side=BOTTOM)
+
+    def bottom_frame_panel(self):
+        """ Creates and populates the bottom frame """
+        # Bottom Frame
+        self.bottom_frame = ttk.Frame(self.root)
+        self.bottom_frame.pack(side=BOTTOM, fill=X)
+
+        # Current Turn on bottom center
+        self.turn_label = ttk.Label(self.bottom_frame, textvariable=self.boardgame.turn)
+
+        # Current game mode placeholder variable
+        self.game_mode_label = ttk.Label(self.bottom_frame)
+        self.game_mode_label.pack(side=BOTTOM)
 
     def start_new_game(self):
         """ Starts a new game """
