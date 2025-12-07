@@ -145,14 +145,7 @@ class SOS:
         """ Starts a new game """
         if messagebox.askyesno(title="New Game",
                                message="Are you sure you want to make a new game?"):
-            if self.boardgame.blue_player.player_type == "Computer":
-                self.boardgame.blue_player = ComputerPlayer(self.boardgame.blue_player)
-            else:
-                self.boardgame.blue_player = Player()
-            if self.boardgame.red_player.player_type == "Computer":
-                self.boardgame.red_player = ComputerPlayer(self.boardgame.red_player)
-            else:
-                self.boardgame.red_player = Player()
+            self.choose_player_types()
             # Sets board size based on radio buttons
             self.boardgame.turn.set("Current Turn: Blue")
             self.boardgame.board_size = self.board_size.get()
@@ -163,37 +156,9 @@ class SOS:
             self.red_player_choice.set('S')
 
             try:
-                # Reset SOS sequence list
-                self.boardgame.complete_sos_list = []
-                # Convert the Base Game Template to either Simple Game
-                if self.boardgame.game_type.get() == "Simple Game":
-                    self.boardgame = SimpleSOSGame(self.boardgame, self.boardgame.blue_player,
-                                                   self.boardgame.red_player)
-                    # Hide Player score labels
-                    self.blue_score_label.pack_forget()
-                    self.red_score_label.pack_forget()
-                    self.blue_score_label_text.pack_forget()
-                    self.red_score_label_text.pack_forget()
+                self.choose_game_mode()
 
-                # Convert the Base Game Template to either General Game
-                elif self.boardgame.game_type.get() == "General Game":
-                    self.boardgame = GeneralSOSGame(self.boardgame, self.boardgame.blue_player,
-                                                    self.boardgame.red_player)
-
-                    # Config labels with new player_classes
-
-                    # Blue score
-                    self.blue_score_label.config(textvariable=self.boardgame.blue_player.score)
-
-                    # Red score
-                    self.red_score_label.config(textvariable=self.boardgame.red_player.score)
-
-                    # Pack the labels to the root window
-                    self.blue_score_label_text.pack(side=TOP)
-                    self.red_score_label_text.pack(side=TOP)
-                    self.blue_score_label.pack(side=TOP)
-                    self.red_score_label.pack(side=TOP)
-
+                # Reset Scores
                 self.boardgame.blue_player.score.set(value=0)
                 self.boardgame.red_player.score.set(value=0)
 
@@ -208,6 +173,48 @@ class SOS:
             except (Exception,):
                 # If any errors occur, skip execution
                 pass
+
+    def choose_game_mode(self):
+        # Reset SOS sequence list
+        self.boardgame.complete_sos_list = []
+        # Convert the Base Game Template to either Simple Game
+        if self.boardgame.game_type.get() == "Simple Game":
+            self.boardgame = SimpleSOSGame(self.boardgame, self.boardgame.blue_player,
+                                           self.boardgame.red_player)
+            # Hide Player score labels
+            self.blue_score_label.pack_forget()
+            self.red_score_label.pack_forget()
+            self.blue_score_label_text.pack_forget()
+            self.red_score_label_text.pack_forget()
+
+        # Convert the Base Game Template to either General Game
+        elif self.boardgame.game_type.get() == "General Game":
+            self.boardgame = GeneralSOSGame(self.boardgame, self.boardgame.blue_player,
+                                            self.boardgame.red_player)
+
+            # Config labels with new player_classes
+
+            # Blue score
+            self.blue_score_label.config(textvariable=self.boardgame.blue_player.score)
+
+            # Red score
+            self.red_score_label.config(textvariable=self.boardgame.red_player.score)
+
+            # Pack the labels to the root window
+            self.blue_score_label_text.pack(side=TOP)
+            self.red_score_label_text.pack(side=TOP)
+            self.blue_score_label.pack(side=TOP)
+            self.red_score_label.pack(side=TOP)
+
+    def choose_player_types(self):
+        if self.boardgame.blue_player.player_type == "Computer":
+            self.boardgame.blue_player = ComputerPlayer(self.boardgame.blue_player)
+        else:
+            self.boardgame.blue_player = Player()
+        if self.boardgame.red_player.player_type == "Computer":
+            self.boardgame.red_player = ComputerPlayer(self.boardgame.red_player)
+        else:
+            self.boardgame.red_player = Player()
 
 
 # Main
