@@ -4,6 +4,13 @@ from tkinter import messagebox
 from tkinter import *
 from Board import Board
 import random
+import psycopg2
+from datetime import datetime
+
+# Database connection
+
+cur = conn.cursor()
+
 
 class Player:
     def __init__(self, player_type="Human"):
@@ -141,6 +148,8 @@ class SOSGameBase:
 
     def new_board(self):
         """ Creates a new board with specified user size"""
+        if self.recorded_game:
+            self.create_record_table()
         try:
             # If board size is correct (n > 2 and n < 10)
             if 2 < self.board_size < 10:
@@ -160,6 +169,7 @@ class SOSGameBase:
                                  message="Invalid input for board size, must enter a number greater than 2 and less "
                                          "than 10")
 
+
     def cell_update(self, cell):
         """ Updates cell with symbol """
         turn = self.turn.get()
@@ -167,7 +177,9 @@ class SOSGameBase:
         if turn == "Current Turn: Blue":
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
-            self.record_move()
+            print(cell.row)
+            print(cell.column)
+            self.record_move('Blue', cell.row, cell.column, self.blue_player.symbol)
             self.board.after(250, self.update_board())
             self.check_sos()
             if not self.win_condition():
@@ -179,7 +191,9 @@ class SOSGameBase:
         else:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
-            self.record_move()
+            print(cell.row)
+            print(cell.column)
+            self.record_move('Red', cell.row, cell.column, self.blue_player.symbol)
             self.board.after(250, self.update_board())
             self.check_sos()
             if not self.win_condition():
@@ -194,6 +208,8 @@ class SOSGameBase:
 
     def check_sos(self):
         """ Checks if an SOS has been completed """
+
+
 
         # SOS Check For Horizontal SOS
         for i in range(self.board_size - 2):
@@ -303,10 +319,44 @@ class SOSGameBase:
         print("Replaying")
 
 
-    def record_move(self):
+    def record_move(self, color, row, column, letter):
         """ Record a move """
+        print("Recording")
+        current_timestamp = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S.%f')
+        print("current_timestamp:", current_timestamp)
         if self.recorded_game:
+            cur.execute(f'''INSERT INTO public."Move" ("timestamp", player, row, "column", symbol) VALUES ('{current_timestamp}', '{color}', {row}, {column}, '{letter}')''')
             print("Move Recorded")
+            conn.commit()
+
+    def create_record_table(self):
+        """ Create a new table of moves """
+        # Deletes all old data
+        cur.execute('DELETE FROM public."Move"')
+
+        # If table doesn't exist, make it
+        create_table = '''
+        CREATE TABLE IF NOT EXISTS public."Move"
+(
+    date timestamp(6) without time zone NOT NULL,
+    player character varying(50) COLLATE pg_catalog."default",
+    "row" integer,
+    "column" integer,
+    symbol character varying(1) COLLATE pg_catalog."default",
+    CONSTRAINT "Move_pkey" PRIMARY KEY (date)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."Move"
+    OWNER to postgres;'''
+
+        cur.execute(create_table)
+
+        # Make table into hypertable from TimescaleDB if it doesn't exist already
+        cur.execute('''SELECT create_hypertable('public."Move"', 'timestamp', if_not_exists => TRUE);''')
+
+        conn.commit()
 
 
 class SimpleSOSGame(SOSGameBase):
