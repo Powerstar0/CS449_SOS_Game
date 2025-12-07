@@ -1,3 +1,4 @@
+import os
 import time
 import tkinter
 from tkinter import messagebox
@@ -6,8 +7,18 @@ from Board import Board
 import random
 import psycopg2
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Load in database details
+DB_HOST = os.getenv("DB_HOST")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_DATABASE = os.getenv("DB_DATABASE")
 
 # Database connection
+conn = psycopg2.connect(host=DB_HOST, database=DB_DATABASE, user=DB_USER, password=DB_PASSWORD)
 
 cur = conn.cursor()
 
@@ -64,10 +75,12 @@ class ComputerPlayer(Player):
                     "state"] != tkinter.DISABLED:
                     self.symbol = 'S'
                     return matrix_list[i + 2][j]
-                if matrix_list[i][j]['text'] == 'S' and matrix_list[i + 2][j]['text'] == 'S' and matrix_list[i + 1][j]['state'] != tkinter.DISABLED:
+                if matrix_list[i][j]['text'] == 'S' and matrix_list[i + 2][j]['text'] == 'S' and matrix_list[i + 1][j][
+                    'state'] != tkinter.DISABLED:
                     self.symbol = 'O'
                     return matrix_list[i + 1][j]
-                if matrix_list[i + 1][j]['text'] == 'O' and matrix_list[i + 2][j]['text'] == 'S' and matrix_list[i][j]['state'] != tkinter.DISABLED:
+                if matrix_list[i + 1][j]['text'] == 'O' and matrix_list[i + 2][j]['text'] == 'S' and matrix_list[i][j][
+                    'state'] != tkinter.DISABLED:
                     self.symbol = 'S'
                     return matrix_list[i][j]
 
@@ -78,24 +91,29 @@ class ComputerPlayer(Player):
                     "state"] != tkinter.DISABLED:
                     self.symbol = 'S'
                     return matrix_list[i][j + 2]
-                if matrix_list[i][j]['text'] == 'S' and matrix_list[i][j + 2]['text'] == 'S' and matrix_list[i][j + 1]['state'] != tkinter.DISABLED:
+                if matrix_list[i][j]['text'] == 'S' and matrix_list[i][j + 2]['text'] == 'S' and matrix_list[i][j + 1][
+                    'state'] != tkinter.DISABLED:
                     self.symbol = 'O'
                     return matrix_list[i][j + 1]
-                if matrix_list[i][j + 1]['text'] == 'O' and matrix_list[i][j + 2]['text'] == 'S' and matrix_list[i][j]['state'] != tkinter.DISABLED:
+                if matrix_list[i][j + 1]['text'] == 'O' and matrix_list[i][j + 2]['text'] == 'S' and matrix_list[i][j][
+                    'state'] != tkinter.DISABLED:
                     self.symbol = 'S'
                     return matrix_list[i][j]
 
         # SOS Check for left diagonal SOS
         for i in range(board_size - 2):
             for j in range(board_size - 2):
-                if matrix_list[i][j]['text'] == 'S' and matrix_list[i + 1][j + 1]['text'] == 'O' and matrix_list[i + 2][j + 2][
-                    "state"] != tkinter.DISABLED:
+                if matrix_list[i][j]['text'] == 'S' and matrix_list[i + 1][j + 1]['text'] == 'O' and \
+                        matrix_list[i + 2][j + 2][
+                            "state"] != tkinter.DISABLED:
                     self.symbol = 'S'
                     return matrix_list[i + 2][j + 2]
-                if matrix_list[i][j]['text'] == 'S' and matrix_list[i + 2][j + 2]['text'] == 'S' and matrix_list[i + 1][j + 1]['state'] != tkinter.DISABLED:
+                if matrix_list[i][j]['text'] == 'S' and matrix_list[i + 2][j + 2]['text'] == 'S' and \
+                        matrix_list[i + 1][j + 1]['state'] != tkinter.DISABLED:
                     self.symbol = 'O'
                     return matrix_list[i + 1][j + 1]
-                if matrix_list[i + 1][j + 1]['text'] == 'O' and matrix_list[i + 2][j + 2]['text'] == 'S' and matrix_list[i][j]['state'] != tkinter.DISABLED:
+                if matrix_list[i + 1][j + 1]['text'] == 'O' and matrix_list[i + 2][j + 2]['text'] == 'S' and \
+                        matrix_list[i][j]['state'] != tkinter.DISABLED:
                     self.symbol = 'S'
                     return matrix_list[i][j]
 
@@ -169,7 +187,6 @@ class SOSGameBase:
                                  message="Invalid input for board size, must enter a number greater than 2 and less "
                                          "than 10")
 
-
     def cell_update(self, cell):
         """ Updates cell with symbol """
         turn = self.turn.get()
@@ -177,8 +194,6 @@ class SOSGameBase:
         if turn == "Current Turn: Blue":
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.blue_player.symbol, state=DISABLED, font=("Helvetica", 40))
-            print(cell.row)
-            print(cell.column)
             self.record_move('Blue', cell.row, cell.column, self.blue_player.symbol)
             self.board.after(250, self.update_board())
             self.check_sos()
@@ -191,8 +206,6 @@ class SOSGameBase:
         else:
             # Adds the symbol and disable the button to prevent any further changes
             cell.config(text=self.red_player.symbol, state=DISABLED, font=("Helvetica", 40))
-            print(cell.row)
-            print(cell.column)
             self.record_move('Red', cell.row, cell.column, self.red_player.symbol)
             self.board.after(250, self.update_board())
             self.check_sos()
@@ -201,15 +214,12 @@ class SOSGameBase:
                 if self.blue_player.player_type == "Computer":
                     self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
 
-
     def set_game_type(self, game_type):
         """ Sets game type """
         self.game_type = game_type
 
     def check_sos(self):
         """ Checks if an SOS has been completed """
-
-
 
         # SOS Check For Horizontal SOS
         for i in range(self.board_size - 2):
@@ -268,7 +278,6 @@ class SOSGameBase:
                         self.color_sequence(self.cell_matrix[i][j], self.cell_matrix[i + 1][j - 1],
                                             self.cell_matrix[i + 2][j - 2])
 
-
     def win_condition(self):
         """ Placeholder for derived classes """
         return False
@@ -313,10 +322,8 @@ class SOSGameBase:
             if self.turn.get() == "Current Turn: Blue":
                 self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
 
-
     def replay_recorded_game(self):
         """ Replays the last played game """
-        print("Replaying")
 
         # Get all moves from last game
         cur.execute('''SELECT *
@@ -325,25 +332,20 @@ class SOSGameBase:
         rows = cur.fetchall()
 
         for row in rows:
-            #print(row)
+            # print(row)
             if row[1] == "Blue":
                 self.blue_player.symbol = row[4]
             elif row[1] == "Red":
                 self.red_player.symbol = row[4]
             self.cell_update(self.cell_matrix[row[2]][row[3]])
 
-
-
     def record_move(self, color, row, column, letter):
         """ Record a move """
         if self.recorded_game:
-            print("Recording")
             current_timestamp = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S.%f')
-            print("current_timestamp:", current_timestamp)
-            if self.recorded_game:
-                cur.execute(f'''INSERT INTO public."Move" ("timestamp", player, row, "column", symbol, board_size, game_type) VALUES ('{current_timestamp}', '{color}', {row}, {column}, '{letter}', {self.board_size}, '{self.game_type.get()}') ''')
-                print("Move Recorded")
-                conn.commit()
+            cur.execute(
+                f'''INSERT INTO public."Move" ("timestamp", player, row, "column", symbol, board_size, game_type) VALUES ('{current_timestamp}', '{color}', {row}, {column}, '{letter}', {self.board_size}, '{self.game_type.get()}') ''')
+            conn.commit()
 
     def create_record_table(self):
         """ Create a new table of moves """
@@ -352,20 +354,19 @@ class SOSGameBase:
 
         # If table doesn't exist, make it
         create_table = '''
-        CREATE TABLE IF NOT EXISTS public."Move"
-(
-    date timestamp(6) without time zone NOT NULL,
-    player character varying(50) COLLATE pg_catalog."default",
-    "row" integer,
-    "column" integer,
-    symbol character varying(1) COLLATE pg_catalog."default",
-    CONSTRAINT "Move_pkey" PRIMARY KEY (date)
-)
+                       CREATE TABLE IF NOT EXISTS public."Move"
+                       (
+                           date     timestamp(6) without time zone NOT NULL,
+                           player   character varying(50) COLLATE pg_catalog."default",
+                           "row"    integer,
+                           "column" integer,
+                           symbol   character varying(1) COLLATE pg_catalog."default",
+                           CONSTRAINT "Move_pkey" PRIMARY KEY (date)
+                       )
+                           TABLESPACE pg_default;
 
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public."Move"
-    OWNER to postgres;'''
+                       ALTER TABLE IF EXISTS public."Move"
+                           OWNER to postgres;'''
 
         cur.execute(create_table)
 
@@ -379,14 +380,13 @@ ALTER TABLE IF EXISTS public."Move"
         self.recorded_game = recorded_setting
 
 
-
 class SimpleSOSGame(SOSGameBase):
     def __init__(self, base_game, blue_player, red_player):
         # Initialize base game template
         super().__init__(blue_player, red_player)
         # Updates base game parameters with what was given
         super().__dict__.update(base_game.__dict__)
-        #self.game_type = 'Simple Game'
+        # self.game_type = 'Simple Game'
 
     def win_condition(self):
         """ First to complete SOS"""
@@ -412,7 +412,7 @@ class GeneralSOSGame(SOSGameBase):
         super().__init__(blue_player, red_player)
         # Updates base game parameters with what was given
         super().__dict__.update(base_game.__dict__)
-        #self.game_type = 'General Game'
+        # self.game_type = 'General Game'
 
     def win_condition(self):
         """ Win condition for general SOS"""
