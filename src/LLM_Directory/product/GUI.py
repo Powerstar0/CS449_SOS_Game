@@ -89,6 +89,10 @@ class SOS:
                         command=lambda player_type="Computer": self.boardgame.blue_player.player_update(
                             player_type)).pack(side=TOP)
 
+        ttk.Radiobutton(self.left_frame, variable=self.blue_player_type, value="LLM", text="LLM",
+                        command=lambda player_type="LLM": self.boardgame.blue_player.player_update(
+                            player_type)).pack(side=TOP)
+
         # Placeholder labels for the score that will be hidden in a simple game or configured in a general game
         self.blue_score_label_text = Label(self.left_frame, text="Blue Player Score:")
         self.blue_score_label = ttk.Label(self.left_frame, textvariable=self.boardgame.blue_player.score)
@@ -120,6 +124,10 @@ class SOS:
                         command=lambda symbol='O': self.boardgame.red_player.symbol_update(symbol)).pack(side=TOP)
         ttk.Radiobutton(self.right_frame, variable=self.red_player_type, value="Computer", text="Computer",
                         command=lambda player_type="Computer": self.boardgame.red_player.player_update(
+                            player_type)).pack(side=TOP)
+
+        ttk.Radiobutton(self.right_frame, variable=self.red_player_type, value="LLM", text="LLM",
+                        command=lambda player_type="LLM": self.boardgame.red_player.player_update(
                             player_type)).pack(side=TOP)
 
         # Score Label
@@ -184,10 +192,18 @@ class SOS:
         """ Checks Player type """
         if self.boardgame.blue_player.player_type == "Computer":
             self.boardgame.blue_player = ComputerPlayer(self.boardgame.blue_player)
+        elif self.boardgame.blue_player.player_type == "LLM":
+            print("LLM")
+            self.boardgame.blue_player = ComputerPlayer(self.boardgame.blue_player)
+            self.boardgame.blue_player.LLM_status = True
         else:
             self.boardgame.blue_player = Player()
         if self.boardgame.red_player.player_type == "Computer":
             self.boardgame.red_player = ComputerPlayer(self.boardgame.red_player)
+        elif self.boardgame.red_player.player_type == "LLM":
+            print("LLM")
+            self.boardgame.red_player = ComputerPlayer(self.boardgame.red_player)
+            self.boardgame.red_player.LLM_status = True
         else:
             self.boardgame.red_player = Player()
 
@@ -227,31 +243,15 @@ class SOS:
                 # If any errors occur, skip execution
                 pass
 
-    def GUI_player_type_correction(self):
-        """ # Correction to ensure player type matches with GUI """
-
-        # Blue Player
-        if self.blue_player_type.get() == "Human":
-            self.blue_player_type.set("Human")
-            self.boardgame.blue_player.player_type = "Human"
-        else:
-            self.blue_player_type.set("Computer")
-            self.boardgame.blue_player.player_type = "Computer"
-
-        # Red Player
-        if self.red_player_type.get() == "Human":
-            self.red_player_type.set("Human")
-            self.boardgame.red_player.player_type = "Human"
-        else:
-            self.red_player_type.set("Computer")
-            self.boardgame.red_player.player_type = "Computer"
-
     def replay_game(self):
         """ Clears board """
 
-        # Creates players to play game
-        self.boardgame.blue_player = Player()
-        self.boardgame.red_player = Player()
+        self.red_player_type.set("Human")
+        self.blue_player_type.set("Human")
+        self.boardgame.blue_player.player_type = "Human"
+        self.boardgame.red_player.player_type = "Human"
+
+        self.choose_player_types()
 
         # Sets board size based on radio buttons
         self.boardgame.turn.set("Current Turn: Blue")
@@ -289,8 +289,6 @@ class SOS:
             self.game_mode_label.config(text=f"Current Game Mode: {self.boardgame.game_type.get()}")
 
             self.boardgame.replay_recorded_game()
-
-            self.GUI_player_type_correction()
 
         except (Exception,):
             # If any errors occur, skip execution
