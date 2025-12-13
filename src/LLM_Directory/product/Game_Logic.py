@@ -432,7 +432,6 @@ class SimpleSOSGame(SOSGameBase):
         super().__init__(blue_player, red_player)
         # Updates base game parameters with what was given
         super().__dict__.update(base_game.__dict__)
-        self.game_type = 'Simple Game'
 
     def win_condition(self):
         """ First to complete SOS"""
@@ -458,7 +457,6 @@ class GeneralSOSGame(SOSGameBase):
         super().__init__(blue_player, red_player)
         # Updates base game parameters with what was given
         super().__dict__.update(base_game.__dict__)
-        self.game_type = 'General Game'
 
     def win_condition(self):
         """ Win condition for general SOS"""
