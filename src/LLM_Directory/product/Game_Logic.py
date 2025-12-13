@@ -74,25 +74,38 @@ class ComputerPlayer(Player):
         client = genai.Client(api_key=API_KEY)
         response = client.models.generate_content(
             model="gemini-2.5-flash-lite", contents=f"""
+            ANSWER:
+            Give a response in the following format and DO NOT give any reasoning or output anything else:
+            row:[row] column:[column] symbol:[symbol]
+            
+            CONTEXT:
             You are a player playing an SOS game against another player where the goal is the complete a sequences of SOS in a tic-tac-toe like board
             of varying sizes. You and the other alternate turns placing either an S or O on an unoccupied cell. SOSs can be scored vertically, horizontally, or diagonally and you can place either an S or an O on your turn.
             There are two game modes. In a simple game, the goal is to be the first to get an SOS. In a general game, the goal is to score the most points where each sequence is one point and scoring means you go again.
-            An example 3x3 board state is [['S', '', ''], ['', '', ''], ['', '', '']]. Here if you put an O in the middle (row = 1 and column = 1), then your opponent can score next turn which is bad.
-            Your goal is to play optimally. Your strategy should be to either score an SOS if possible, block opponents from scoring, or prevent them from scoring an SOS next turn from your placement if possible.
-            The game mode is {game_mode}. The board size is {board_size}x{board_size}.
+            An example 3x3 board state is [['S', '', ''], ['', '', ''], ['', '', '']] where each sublist is the row and the order of the elements inside, the columns. Here if you put an O in the middle (row = 1 and column = 1), then your opponent can score next turn which is bad.
+            Your goal is to play optimally. Your strategy should be to:
+            1. Score an SOS if possible 
+            2. Block opponents from scoring an SOS
+            3. Prevent them from scoring an SOS next turn from your placement. In other words, do not place in a way that allows them to complete an SOS sequence next turn.
+            The game mode is {game_mode.get()}. The board size is {board_size}x{board_size}.  The rows and columns start at index 0.
             The current board state is as follows and it is your turn:
             {translated_cell_matrix_rows}.
-            Please ONLY give a response in the following format for what your optimal next move should be (The rows and columns start at index 0):
-            row:[row] column:[column] symbol:[symbol]
             """
         )
         print(response.text)
         llm_move = response.text
-        row = int(llm_move[4])
+        # Remove spaces and get response in list format
+        llm_move = llm_move.split()
+        # Get only the numbers and symbol from LLM response
+        llm_move = [word[-1] for word in llm_move]
+        # Row
+        row = int(llm_move[0])
         print(row)
-        column = int(llm_move[13])
+        # Column
+        column = int(llm_move[1])
         print(column)
-        symbol = llm_move[-1]
+        # Symbol
+        symbol = llm_move[2]
         print(symbol)
 
         self.symbol = symbol
