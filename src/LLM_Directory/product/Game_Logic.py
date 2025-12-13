@@ -51,14 +51,14 @@ class ComputerPlayer(Player):
         self.player_type = "Computer"
         self.LLM_status = False
 
-    def move_selector(self, board_size, matrix_list):
+    def move_selector(self, board_size, matrix_list, game_mode):
         if self.LLM_status:
-            return self.make_LLM_move(board_size, matrix_list)
+            return self.make_LLM_move(board_size, matrix_list, game_mode)
         elif self.make_sos_move(board_size, matrix_list):
             return self.make_sos_move(board_size, matrix_list)
         return self.make_random_move(board_size, matrix_list)
 
-    def make_LLM_move(self, board_size, matrix_list):
+    def make_LLM_move(self, board_size, matrix_list, game_mode):
         """ Makes LLM move"""
 
         # Turns cells into a human-readable format
@@ -74,14 +74,16 @@ class ComputerPlayer(Player):
         client = genai.Client(api_key=API_KEY)
         response = client.models.generate_content(
             model="gemini-2.5-flash-lite", contents=f"""
-            You are a player playing an SOS game where the goal is the complete SOSs in a tic-tac-toe like board
-            of varying sizes. SOSs can be scored vertically, horizontally, or diagonally and you can place either an S or an O on your turn.
-            An example board state is [['S', '', ''], ['', '', ''], ['', '', '']]. Here if you put an O in the middle (row = 1 and column = 1), then your opponent can score next turn which is bad.
+            You are a player playing an SOS game against another player where the goal is the complete a sequences of SOS in a tic-tac-toe like board
+            of varying sizes. You and the other alternate turns placing either an S or O on an unoccupied cell. SOSs can be scored vertically, horizontally, or diagonally and you can place either an S or an O on your turn.
+            There are two game modes. In a simple game, the goal is to be the first to get an SOS. In a general game, the goal is to score the most points where each sequence is one point and scoring means you go again.
+            An example 3x3 board state is [['S', '', ''], ['', '', ''], ['', '', '']]. Here if you put an O in the middle (row = 1 and column = 1), then your opponent can score next turn which is bad.
             Your goal is to play optimally. Your strategy should be to either score an SOS if possible, block opponents from scoring, or prevent them from scoring an SOS next turn from your placement if possible.
+            The game mode is {game_mode}. The board size is {board_size}x{board_size}.
             The current board state is as follows and it is your turn:
-            {translated_cell_matrix_rows}
-            Please ONLY give a response in the following format for what your optimal next move should be (The rows and columns start at 0):
-            row:? column:? symbol:?
+            {translated_cell_matrix_rows}.
+            Please ONLY give a response in the following format for what your optimal next move should be (The rows and columns start at index 0):
+            row:[row] column:[column] symbol:[symbol]
             """
         )
         print(response.text)
@@ -243,7 +245,7 @@ class SOSGameBase:
             if not self.win_condition():
                 self.turn.set(value="Current Turn: Red")
                 if self.red_player.player_type == "Computer" or self.red_player.player_type == "LLM":
-                    self.cell_update(self.red_player.move_selector(self.board_size, self.cell_matrix))
+                    self.cell_update(self.red_player.move_selector(self.board_size, self.cell_matrix, self.game_type))
 
         # Red turn
         else:
@@ -255,7 +257,7 @@ class SOSGameBase:
             if not self.win_condition():
                 self.turn.set(value="Current Turn: Blue")
                 if self.blue_player.player_type == "Computer" or self.blue_player.player_type == "LLM":
-                    self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
+                    self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix, self.game_type))
 
     def set_game_type(self, game_type):
         """ Sets game type """
@@ -363,7 +365,7 @@ class SOSGameBase:
         """ Only applicable to Computer games """
         if self.blue_player.player_type == "Computer" or self.blue_player.player_type == "LLM":
             if self.turn.get() == "Current Turn: Blue":
-                self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
+                self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix, self.game_type))
 
     def replay_recorded_game(self):
         """ Replays the last played game """
@@ -430,7 +432,7 @@ class SimpleSOSGame(SOSGameBase):
         super().__init__(blue_player, red_player)
         # Updates base game parameters with what was given
         super().__dict__.update(base_game.__dict__)
-        # self.game_type = 'Simple Game'
+        self.game_type = 'Simple Game'
 
     def win_condition(self):
         """ First to complete SOS"""
@@ -456,7 +458,7 @@ class GeneralSOSGame(SOSGameBase):
         super().__init__(blue_player, red_player)
         # Updates base game parameters with what was given
         super().__dict__.update(base_game.__dict__)
-        # self.game_type = 'General Game'
+        self.game_type = 'General Game'
 
     def win_condition(self):
         """ Win condition for general SOS"""
@@ -501,10 +503,11 @@ class GeneralSOSGame(SOSGameBase):
                     self.turn.set(value="Current Turn: Red")
                     # Computer move
                     if self.red_player.player_type == "Computer" or self.red_player.player_type == "LLM":
-                        self.cell_update(self.red_player.move_selector(self.board_size, self.cell_matrix))
+                        self.cell_update(
+                            self.red_player.move_selector(self.board_size, self.cell_matrix, self.game_type))
                 # Computer move
                 elif self.blue_player.player_type == "Computer" or self.blue_player.player_type == "LLM":
-                    self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
+                    self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix, self.game_type))
         # Red turn
         else:
             # Adds the symbol and disable the button to prevent any further changes
@@ -521,7 +524,8 @@ class GeneralSOSGame(SOSGameBase):
                     self.turn.set(value="Current Turn: Blue")
                     # Computer move
                     if self.blue_player.player_type == "Computer" or self.blue_player.player_type == "LLM":
-                        self.cell_update(self.blue_player.move_selector(self.board_size, self.cell_matrix))
+                        self.cell_update(
+                            self.blue_player.move_selector(self.board_size, self.cell_matrix, self.game_type))
                 # Computer move
                 elif self.red_player.player_type == "Computer" or self.red_player.player_type == "LLM":
-                    self.cell_update(self.red_player.move_selector(self.board_size, self.cell_matrix))
+                    self.cell_update(self.red_player.move_selector(self.board_size, self.cell_matrix, self.game_type))
